@@ -1,0 +1,13 @@
+name: Update workflow README with input and outputs from shared workflow
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+
+jobs:
+  generate-doc-for-auto-doc:
+    uses: ./.github/workflows/re-auto-doc.yml
+    with:
+      workflow-file: .github/workflows/re-auto-doc.yml
+      readme: README-auto-doc.md

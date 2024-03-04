@@ -1,12 +1,12 @@
-name: Update workflow README with input and outputs from shared workflow
+name: Update workflow README with input and outputs from reusable workflow
 
 on:
   workflow_call:
     inputs:
-      workflow:
+      workflow-file:
         description: Path to the workflow file
         type: string
-      readme:
+      readme-file:
         description: Path to the output file
         type: string
 
@@ -26,9 +26,9 @@ jobs:
       - name: auto-doc
         uses: tj-actions/auto-doc@v3
         with:
-          filename: ${{ inputs.workflow}}
+          filename: ${{ inputs.workflow-file}}
           reusable: true
-          output: ${{ inputs.readme}}
+          output: ${{ inputs.readme-file }}
           use_code_blocks: true
 
       - name: Verify Changed files
@@ -36,11 +36,11 @@ jobs:
         id: verify-changed-files
         with:
           files: |
-            ${{ inputs.readme}}
+            ${{ inputs.readme-file }}
 
       - name: Commit changes
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: EndBug/add-and-commit@v9
         with:
           message: 'doc: Update workflow documentation'
-          add: ${{ inputs.readme}}
+          add: ${{ inputs.readme-file }}
