@@ -26,9 +26,9 @@ jobs:
       - name: auto-doc
         uses: tj-actions/auto-doc@v3
         with:
-          filename: ${{ inputs.workflow-file}}
+          filename: ${{ inputs.workflowfile}}
           reusable: true
-          output: ${{ inputs.readme-file }}
+          output: ${{ inputs.readmefile }}
           use_code_blocks: true
 
       - name: Verify Changed files
@@ -36,11 +36,11 @@ jobs:
         id: verify-changed-files
         with:
           files: |
-            ${{ inputs.readme-file }}
+            ${{ inputs.readmefile }}
 
       - name: Commit changes
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: EndBug/add-and-commit@v9
         with:
           message: 'doc: Update workflow documentation'
-          add: ${{ inputs.readme-file }}
+          add: ${{ inputs.readmefile }}
