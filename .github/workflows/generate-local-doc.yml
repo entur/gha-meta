@@ -10,4 +10,4 @@ jobs:
     uses: ./.github/workflows/re-auto-doc.yml
     with:
       workflow-file: .github/workflows/re-auto-doc.yml
-      readme: README-auto-doc.md
+      readme-file: README-auto-doc.md
