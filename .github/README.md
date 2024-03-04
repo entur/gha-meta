@@ -3,6 +3,8 @@
       <br>entur/gha-meta<br>
 </h1>
 
+[![CI](https://github.com/entur/gha-meta/actions/workflows/ci.yaml/badge.svg?branch=main&event=push)](https://github.com/entur/gha-docker/actions/workflows/ci.yaml)
+
 Reusable workflows for making reusable workflows
 
 [auto-doc](./README-auto-doc.md)

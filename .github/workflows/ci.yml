@@ -1,9 +1,7 @@
-name: Update workflow README with input and outputs from reusable workflow
+name: Entur/Meta/CI
 
 on:
   pull_request:
-    types: [opened, reopened]
-
 
 jobs:
   generate-doc-for-auto-doc:
