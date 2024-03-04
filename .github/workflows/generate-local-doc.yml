@@ -7,7 +7,7 @@ on:
 
 jobs:
   generate-doc-for-auto-doc:
-    uses: ./.github/workflows/re-auto-doc.yml
+    uses: ./.github/workflows/auto-doc.yml
     with:
-      workflow-file: .github/workflows/re-auto-doc.yml
+      workflow-file: .github/workflows/auto-doc.yml
       readme-file: README-auto-doc.md

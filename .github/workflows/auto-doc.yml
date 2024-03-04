@@ -1,4 +1,4 @@
-name: Reusable workflow - Update README for workflow with input and outputs
+name: Entur/Meta/Doc
 
 on:
   workflow_call:
