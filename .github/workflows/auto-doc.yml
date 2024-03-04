@@ -3,10 +3,10 @@ name: Entur/Meta/Doc
 on:
   workflow_call:
     inputs:
-      workflow-file:
+      workflow:
         description: Path to the workflow file
         type: string
-      readme-file:
+      readme:
         description: Path to the output file
         type: string
 
