@@ -1,4 +1,4 @@
-name: Update workflow README with input and outputs from reusable workflow
+name: Reusable workflow - Update README for workflow with input and outputs
 
 on:
   workflow_call:
