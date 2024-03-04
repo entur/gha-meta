@@ -1,0 +1,11 @@
+name: Entur/Meta/CI
+
+on:
+  pull_request:
+
+jobs:
+  generate-doc-for-auto-doc:
+    uses: ./.github/workflows/auto-doc.yml
+    with:
+      workflow_file: .github/workflows/auto-doc.yml
+      readme_file: README-auto-doc.md

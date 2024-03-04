@@ -10,8 +10,8 @@ Uses https://github.com/marketplace/actions/auto-doc
 
 |                                  INPUT                                  |  TYPE  | REQUIRED | DEFAULT |        DESCRIPTION        |
 |-------------------------------------------------------------------------|--------|----------|---------|---------------------------|
-|    <a name="input_readme-file"></a>[readme-file](#input_readme-file)    | string |  false   |         |  Path to the output file  |
-| <a name="input_workflow-file"></a>[workflow-file](#input_workflow-file) | string |  false   |         | Path to the workflow file |
+|    <a name="input_readme_file"></a>[readme_file](#input_readme_file)    | string |  false   |         |  Path to the output file  |
+| <a name="input_workflow_file"></a>[workflow_file](#input_workflow_file) | string |  false   |         | Path to the workflow file |
 
 <!-- AUTO-DOC-INPUT:END -->
 

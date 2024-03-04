@@ -3,13 +3,12 @@ name: Entur/Meta/Doc
 on:
   workflow_call:
     inputs:
-      workflowfile:
+      workflow_file:
         description: Path to the workflow file
         type: string
-      readmefile:
+      readme_file:
         description: Path to the output file
         type: string
-
 
 jobs:
   update-doc:
@@ -26,9 +25,9 @@ jobs:
       - name: auto-doc
         uses: tj-actions/auto-doc@v3
         with:
-          filename: ${{ inputs.workflowfile}}
+          filename: ${{ inputs.workflow_file}}
           reusable: true
-          output: ${{ inputs.readmefile }}
+          output: ${{ inputs.readme_file }}
           use_code_blocks: true
 
       - name: Verify Changed files
@@ -36,11 +35,11 @@ jobs:
         id: verify-changed-files
         with:
           files: |
-            ${{ inputs.readmefile }}
+            ${{ inputs.readme_file }}
 
       - name: Commit changes
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: EndBug/add-and-commit@v9
         with:
-          message: 'doc: Update workflow documentation'
-          add: ${{ inputs.readmefile }}
+          message: "docs: Update workflow documentation"
+          add: ${{ inputs.readme_file }}
