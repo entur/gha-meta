@@ -3,7 +3,7 @@
       <br>entur/gha-meta<br>
 </h1>
 
-[![CI](https://github.com/entur/gha-meta/actions/workflows/ci.yaml/badge.svg?branch=main&event=pull_request)](https://github.com/entur/gha-docker/actions/workflows/ci.yaml)
+[![CI](https://github.com/entur/gha-meta/actions/workflows/ci.yml/badge.svg)](https://github.com/entur/gha-meta/actions/workflows/ci.yml)
 
 Reusable workflows for making reusable workflows
 
