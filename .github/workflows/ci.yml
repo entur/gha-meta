@@ -7,5 +7,5 @@ jobs:
   generate-doc-for-auto-doc:
     uses: ./.github/workflows/auto-doc.yml
     with:
-      workflow-file: .github/workflows/auto-doc.yml
-      readme-file: README-auto-doc.md
+      workflow_file: .github/workflows/auto-doc.yml
+      readme_file: README-auto-doc.md
