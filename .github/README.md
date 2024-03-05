@@ -7,4 +7,4 @@
 
 Reusable workflows for making reusable workflows
 
-[auto-doc](./README-auto-doc.md)
+[auto-doc](../README-auto-doc.md)
