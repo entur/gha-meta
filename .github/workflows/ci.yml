@@ -9,3 +9,8 @@ jobs:
     with:
       workflow_file: .github/workflows/auto-doc.yml
       readme_file: README-auto-doc.md
+  generate-doc-for-release:
+    uses: ./.github/workflows/auto-doc.yml
+    with:
+      workflow_file: .github/workflows/release.yml
+      readme_file: README-release.md
