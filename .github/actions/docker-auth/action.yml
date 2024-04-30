@@ -1,0 +1,76 @@
+name: Entur/Meta/DockerAuth
+inputs:
+  environment:
+    description: "The target environment"
+    required: true
+    type: string
+  cloud_provider:
+    description: "Which repository to use. GCP/Azure"
+    type: string
+    default: "GCP"
+  token_format:
+    description: |-
+      Output format for the generated authentication token. For OAuth 2.0 access
+      tokens, specify "access_token". For OIDC tokens, specify "id_token". To
+      skip token generation, leave this value empty.
+    default: ""
+    required: false
+  workload_identity_provider:
+    type: string
+    default: ""
+  service_account:
+    type: string
+    default: ""
+  gha_cloud_auth_token_format:
+    type: string
+    default: ""
+  azure_client_id:
+    type: string
+    default: ""
+  azure_tenant_id:
+    type: string
+    default: ""
+  azure_subscription_id:
+    type: string
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - id: set-env
+      shell: bash
+      run: |
+        echo "GHA_DOCKER_AUTH_CLOUD_PROVIDER=${{ inputs.cloud_provider }}" >> $GITHUB_ENV
+        echo "GHA_DOCKER_AUTH_TOKEN_FORMAT=${{ inputs.token_format }}" >> $GITHUB_ENV
+    - id: verify-cloud-provider
+      if: env.GHA_DOCKER_AUTH_CLOUD_PROVIDER != 'GCP' && env.GHA_DOCKER_AUTH_CLOUD_PROVIDER != 'Azure'
+      shell: bash
+      run: |
+        echo "cloud_provider can only be GCP or Azure"
+        exit 1
+    - id: login-gcp
+      if: env.GHA_DOCKER_AUTH_CLOUD_PROVIDER == 'GCP'
+      uses: google-github-actions/auth@v2.1.2
+      with:
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.service_account }}
+        token_format: "access_token"
+    - id: login-gcr
+      uses: docker/login-action@v3.1.0
+      if: inputs.cloud_provider == 'GCP'
+      with:
+        registry: eu.gcr.io
+        username: oauth2accesstoken
+        password: ${{ steps.login-gcp.outputs.access_token }}
+    - id: login-azure
+      if: env.GHA_DOCKER_AUTH_CLOUD_PROVIDER == 'Azure'
+      uses: Azure/login@v2
+      with:
+        client-id: ${{ inputs.azure_client_id }}
+        tenant-id: ${{ inputs.azure_tenant_id }}
+        subscription-id: ${{ inputs.azure_subscription_id }}
+    - id: login-acr
+      if: env.GHA_DOCKER_AUTH_CLOUD_PROVIDER == 'Azure'
+      shell: bash
+      run: |
+        az acr login --name acrentur001

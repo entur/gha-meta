@@ -8,20 +8,10 @@ inputs:
     description: "Which repository to use. GCP/Azure"
     type: string
     default: "GCP"
-  token_format:
-    description: |-
-      Output format for the generated authentication token. For OAuth 2.0 access
-      tokens, specify "access_token". For OIDC tokens, specify "id_token". To
-      skip token generation, leave this value empty.
-    default: ""
-    required: false
   workload_identity_provider:
     type: string
     default: ""
   service_account:
-    type: string
-    default: ""
-  gha_cloud_auth_token_format:
     type: string
     default: ""
   azure_client_id:
@@ -41,7 +31,6 @@ runs:
       shell: bash
       run: |
         echo "GHA_CLOUD_AUTH_CLOUD_PROVIDER=${{ inputs.cloud_provider }}" >> $GITHUB_ENV
-        echo "GHA_CLOUD_AUTH_TOKEN_FORMAT=${{ inputs.token_format }}" >> $GITHUB_ENV
     - id: verify-cloud-provider
       if: env.GHA_CLOUD_AUTH_CLOUD_PROVIDER != 'GCP' && env.GHA_CLOUD_AUTH_CLOUD_PROVIDER != 'Azure'
       shell: bash
@@ -54,7 +43,6 @@ runs:
       with:
         workload_identity_provider: ${{ inputs.workload_identity_provider }}
         service_account: ${{ inputs.service_account }}
-        token_format: ${{ inputs.gha_cloud_auth_token_format }}
     - id: login-azure
       if: env.GHA_CLOUD_AUTH_CLOUD_PROVIDER == 'Azure'
       uses: Azure/login@v2
