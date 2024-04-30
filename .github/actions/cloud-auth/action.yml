@@ -33,9 +33,6 @@ inputs:
   azure_subscription_id:
     type: string
     default: ""
-  azure_subscription_id:
-    type: string
-    default: ""
 
 runs:
   using: "composite"
