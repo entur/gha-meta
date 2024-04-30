@@ -8,6 +8,12 @@ inputs:
     description: "Which repository to use. GCP/Azure"
     type: string
     default: "GCP"
+  azure_cluster_resource_group:
+    type: string
+    default: ""
+  azure_cluster_name:
+    type: string
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -39,7 +45,7 @@ runs:
       if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER == 'Azure'
       uses: azure/aks-set-context@v3
       with:
-        resource-group: ${{ vars.AZURE_CLUSTER_RESOURCE_GROUP }}
-        cluster-name: ${{ vars.AZURE_CLUSTER_NAME }}
+        resource-group: ${{ inputs.azure_cluster_resource_group }}
+        cluster-name: ${{ inputs.azure_cluster_name }}
         admin: false
         use-kubelogin: true
