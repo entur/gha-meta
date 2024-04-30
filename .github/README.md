@@ -8,5 +8,11 @@
 
 Reusable workflows for making reusable workflows
 
-* [auto-doc](../README-auto-doc.md)
-* [release](/README-release.md)
+- [auto-doc](/README-auto-doc.md)
+- [release](/README-release.md)
+
+Reusable actions
+
+- `cloud-auth` for GCP and Azure
+- `k8s-auth` for GKE and AKS
+- `docker-auth` for GCR or ACR
