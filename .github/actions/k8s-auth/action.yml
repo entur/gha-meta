@@ -1,0 +1,55 @@
+name: Entur/Meta/KubernetesAuth
+inputs:
+  environment:
+    description: "The target environment"
+    required: true
+    type: string
+  github_token:
+    type: string
+    required: true
+  cloud_provider:
+    description: "Which repository to use. GCP/Azure"
+    type: string
+    default: "GCP"
+  azure_cluster_resource_group:
+    type: string
+    default: ""
+  azure_cluster_name:
+    type: string
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - id: set-env
+      shell: bash
+      run: |
+        echo "GHA_KUBERNETES_AUTH_CLOUD_PROVIDER=${{ inputs.cloud_provider }}" >> $GITHUB_ENV
+    - id: verify-cloud-provider
+      if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER != 'GCP' && env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER != 'Azure'
+      shell: bash
+      run: |
+        echo "cloud_provider can only be GCP or Azure"
+        exit 1
+    - id: get-credentials-gcp
+      if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER == 'GCP'
+      uses: google-github-actions/get-gke-credentials@v1
+      with:
+        project_id: "ent-kub-${{inputs.environment}}" # TODO: fix jp
+        cluster_name: "kub-ent-${{inputs.environment}}-001" # TODO: fix jp
+        location: "europe-west1" # TODO: fix jp
+    - id: kubelogin-azure
+      if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER == 'Azure'
+      uses: azure/use-kubelogin@v1
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+      with:
+        kubelogin-version: "latest"
+    - id: set-context-azure
+      if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER == 'Azure'
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: ${{ inputs.azure_cluster_resource_group }}
+        cluster-name: ${{ inputs.azure_cluster_name }}
+        admin: false
+        use-kubelogin: true

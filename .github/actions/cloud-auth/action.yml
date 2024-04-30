@@ -1,0 +1,52 @@
+name: Entur/Meta/CloudAuth
+inputs:
+  environment:
+    description: "The target environment"
+    required: true
+    type: string
+  cloud_provider:
+    description: "Which repository to use. GCP/Azure"
+    type: string
+    default: "GCP"
+  workload_identity_provider:
+    type: string
+    default: ""
+  service_account:
+    type: string
+    default: ""
+  azure_client_id:
+    type: string
+    default: ""
+  azure_tenant_id:
+    type: string
+    default: ""
+  azure_subscription_id:
+    type: string
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - id: set-env
+      shell: bash
+      run: |
+        echo "GHA_CLOUD_AUTH_CLOUD_PROVIDER=${{ inputs.cloud_provider }}" >> $GITHUB_ENV
+    - id: verify-cloud-provider
+      if: env.GHA_CLOUD_AUTH_CLOUD_PROVIDER != 'GCP' && env.GHA_CLOUD_AUTH_CLOUD_PROVIDER != 'Azure'
+      shell: bash
+      run: |
+        echo "cloud_provider can only be GCP or Azure"
+        exit 1
+    - id: login-gcp
+      if: env.GHA_CLOUD_AUTH_CLOUD_PROVIDER == 'GCP'
+      uses: google-github-actions/auth@v2.1.2
+      with:
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.service_account }}
+    - id: login-azure
+      if: env.GHA_CLOUD_AUTH_CLOUD_PROVIDER == 'Azure'
+      uses: Azure/login@v2
+      with:
+        client-id: ${{ inputs.azure_client_id }}
+        tenant-id: ${{ inputs.azure_tenant_id }}
+        subscription-id: ${{ inputs.azure_subscription_id }}
