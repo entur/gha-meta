@@ -4,6 +4,9 @@ inputs:
     description: "The target environment"
     required: true
     type: string
+  github_token:
+    type: string
+    required: true
   cloud_provider:
     description: "Which repository to use. GCP/Azure"
     type: string
@@ -14,6 +17,7 @@ inputs:
   azure_cluster_name:
     type: string
     default: ""
+
 runs:
   using: "composite"
   steps:
@@ -38,7 +42,7 @@ runs:
       if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER == 'Azure'
       uses: azure/use-kubelogin@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
         kubelogin-version: "latest"
     - id: set-context-azure
