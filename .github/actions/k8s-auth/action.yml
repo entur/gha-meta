@@ -7,6 +7,10 @@ inputs:
   github_token:
     type: string
     required: true
+  project_id:
+    type: string
+  cluster_name:
+    type: string
   cloud_provider:
     description: "Which repository to use. GCP/Azure"
     type: string
@@ -31,8 +35,15 @@ runs:
       run: |
         echo "cloud_provider can only be GCP or Azure"
         exit 1
-    - id: get-credentials-gcp
-      if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER == 'GCP'
+    - id: get-custom-credentials-gcp
+      if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER == 'GCP' && (inputs.cluster_name != '' || inputs.project_id != '')
+      uses: google-github-actions/get-gke-credentials@v1
+      with:
+        project_id: ${{ inputs.project_id }}
+        cluster_name: ${{inputs.cluster_name }}
+        location: "europe-west1" # TODO: fix jp
+    - id: get-golden-path-credentials-gcp
+      if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER == 'GCP' && (inputs.cluster_name == '' && inputs.project_id == '')
       uses: google-github-actions/get-gke-credentials@v1
       with:
         project_id: "ent-kub-${{inputs.environment}}" # TODO: fix jp
