@@ -31,7 +31,7 @@ jobs:
           reusable: true
           output: ${{ env.GHA_META_README_FILE }}
           use_code_blocks: true
-      - uses: tj-actions/verify-changed-files@v8.6
+      - uses: tj-actions/verify-changed-files@v13.1
         id: verify-changed-files
         with:
           files: |
