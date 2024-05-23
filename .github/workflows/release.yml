@@ -8,6 +8,11 @@ on:
         type: number
         default: 5
   push:
+    inputs:
+      timeout_minutes:
+        description: "Job timeout in minutes"
+        type: number
+        default: 5
     branches:
       - main
 
@@ -17,7 +22,7 @@ permissions:
 
 jobs:
   release-please:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: ${{ inputs.timeout_minutes }}
     steps:
       - id: release
