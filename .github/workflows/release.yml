@@ -23,7 +23,7 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-24.04
-    timeout-minutes: ${{ inputs.timeout_minutes }}
+    timeout-minutes: ${{ fromJSON(inputs.timeout_minutes) }}
     steps:
       - id: release
         uses: google-github-actions/release-please-action@v4
