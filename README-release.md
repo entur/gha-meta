@@ -7,11 +7,7 @@ This workflow will also push git tags for the major and minor versions, this ena
 ## Inputs
 
 <!-- AUTO-DOC-INPUT:START - Do not remove or modify this section -->
-
-|                                     INPUT                                     |  TYPE  | REQUIRED | DEFAULT |      DESCRIPTION       |
-|-------------------------------------------------------------------------------|--------|----------|---------|------------------------|
-| <a name="input_timeout_minutes"></a>[timeout_minutes](#input_timeout_minutes) | number |  false   |   `5`   | Job timeout in minutes |
-
+No inputs.
 <!-- AUTO-DOC-INPUT:END -->
 
 ## Outputs
