@@ -9,13 +9,17 @@ on:
       readme_file:
         description: Path to the output file
         type: string
+      timeout_minutes:
+        description: "Job timeout in minutes"
+        type: number
+        default: 5
 
 jobs:
   update-doc:
     runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout_minutes }}
     permissions:
       contents: write
-    timeout-minutes: 5
     steps:
       - id: set-env
         shell: bash
