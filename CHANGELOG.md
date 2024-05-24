@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.4](https://github.com/entur/gha-meta/compare/v1.1.3...v1.1.4) (2024-05-24)
+
+
+### Bug Fixes
+
+* release please ([998164a](https://github.com/entur/gha-meta/commit/998164aafe2124bb277053516b96e71ad6a2d4cf))
+* release please ([5c367e4](https://github.com/entur/gha-meta/commit/5c367e42797c2c490dc6b6452b0db12e8baf3648))
+* release please ([#25](https://github.com/entur/gha-meta/issues/25)) ([4498cf9](https://github.com/entur/gha-meta/commit/4498cf949d08920d5d429f773cfc3109c04080b4))
+* release please ([#26](https://github.com/entur/gha-meta/issues/26)) ([bcbeba2](https://github.com/entur/gha-meta/commit/bcbeba235d96988380316edd65a033ebb3c0171e))
+
 ## [1.1.3](https://github.com/entur/gha-meta/compare/v1.1.2...v1.1.3) (2024-05-24)
 
 
