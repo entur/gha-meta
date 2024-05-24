@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.3](https://github.com/entur/gha-meta/compare/v1.1.2...v1.1.3) (2024-05-24)
+
+
+### Bug Fixes
+
+* workflow_call ([fb0e042](https://github.com/entur/gha-meta/commit/fb0e042fc8043ad7172d8624a05657bd2f7f3459))
+* workflow_call ([#23](https://github.com/entur/gha-meta/issues/23)) ([1cd323b](https://github.com/entur/gha-meta/commit/1cd323b50b6e0c48996f094cb57a26ef4ae94233))
+
 ## [1.1.2](https://github.com/entur/gha-meta/compare/v1.1.1...v1.1.2) (2024-05-23)
 
 
