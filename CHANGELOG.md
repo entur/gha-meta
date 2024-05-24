@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.5](https://github.com/entur/gha-meta/compare/v1.1.4...v1.1.5) (2024-05-24)
+
+
+### Bug Fixes
+
+* write all perm ([5c4d168](https://github.com/entur/gha-meta/commit/5c4d1687c77b390dc94869e790084dd558e709ba))
+* write all perm ([#28](https://github.com/entur/gha-meta/issues/28)) ([071e2bf](https://github.com/entur/gha-meta/commit/071e2bfd84224bf3f1c989c244fa1b60330d424f))
+
 ## [1.1.4](https://github.com/entur/gha-meta/compare/v1.1.3...v1.1.4) (2024-05-24)
 
 
