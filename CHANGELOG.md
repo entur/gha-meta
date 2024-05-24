@@ -7,12 +7,6 @@
 
 * workflow_call ([fb0e042](https://github.com/entur/gha-meta/commit/fb0e042fc8043ad7172d8624a05657bd2f7f3459))
 * workflow_call ([#23](https://github.com/entur/gha-meta/issues/23)) ([1cd323b](https://github.com/entur/gha-meta/commit/1cd323b50b6e0c48996f094cb57a26ef4ae94233))
-
-## [1.1.2](https://github.com/entur/gha-meta/compare/v1.1.1...v1.1.2) (2024-05-23)
-
-
-### Bug Fixes
-
 * pin ubuntu ([41b65ca](https://github.com/entur/gha-meta/commit/41b65ca7a7b83f3babcdf6f19a251313edba8c4b))
 * pin ubuntu ([#21](https://github.com/entur/gha-meta/issues/21)) ([74b807f](https://github.com/entur/gha-meta/commit/74b807fdf749d3e1886dfe496d40fcf5cdbe4227))
 * set timeout ([#18](https://github.com/entur/gha-meta/issues/18)) ([bccc7bd](https://github.com/entur/gha-meta/commit/bccc7bd84ce2092164e2b28925c21483ad1e9b08))
@@ -20,6 +14,8 @@
 * set timeout_minutes ([4ac8cbd](https://github.com/entur/gha-meta/commit/4ac8cbded9391d74d33b40a1490c82c0396f4953))
 * set timeout_minutes ([#19](https://github.com/entur/gha-meta/issues/19)) ([fa573d9](https://github.com/entur/gha-meta/commit/fa573d9cad24801bacd0ed77fb6aaefb312cee1c))
 * set timeout_minutes ([#20](https://github.com/entur/gha-meta/issues/20)) ([9971dc0](https://github.com/entur/gha-meta/commit/9971dc05deeb26a1803ec98a6086f01ca4e6d5e8))
+
+## 1.1.2 [REDACTED]
 
 ## [1.1.1](https://github.com/entur/gha-meta/compare/v1.1.0...v1.1.1) (2024-05-07)
 
