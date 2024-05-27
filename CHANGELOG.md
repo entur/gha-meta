@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.6](https://github.com/entur/gha-meta/compare/v1.1.5...v1.1.6) (2024-05-27)
+
+
+### Bug Fixes
+
+* permissions ([ff4b793](https://github.com/entur/gha-meta/commit/ff4b7936dd84b1dbff71974c0045703ebb013b10))
+* permissions ([#30](https://github.com/entur/gha-meta/issues/30)) ([3f8293c](https://github.com/entur/gha-meta/commit/3f8293cb0428303f3706aa2fed0edf8583504d4c))
+
 ## [1.1.5](https://github.com/entur/gha-meta/compare/v1.1.4...v1.1.5) (2024-05-24)
 
 
