@@ -7,9 +7,6 @@ inputs:
   cloud_provider:
     description: "Which cloud service provider to use - Google Cloud: 'gcp' or Azure: 'az'"
     default: "gcp"
-  github_token:
-    description: "GitHub token"
-    required: true
   project_id:
     description: "Google Cloud project ID, required when using Google Cloud"
   cluster_name:
@@ -53,7 +50,7 @@ runs:
       if: inputs.cloud_provider == 'az'
       uses: azure/use-kubelogin@v1
       env:
-        GITHUB_TOKEN: ${{ inputs.github_token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         kubelogin-version: "latest"
     - id: set-context-azure
