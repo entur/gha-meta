@@ -29,6 +29,22 @@ runs:
         echo "Invalid cloud provider input: ${GHA_CLOUD_AUTH_CLOUD_PROVIDER}"
         echo "Valid options are: 'gcp' or 'az'"
         exit 1
+    - id: verify-vars-is-set-gcp
+      name: Verify GCP environment variables
+      if: inputs.cloud_provider == 'gcp' && (inputs.workload_identity_provider == '' || inputs.service_account == '')
+      shell: bash
+      run: |
+        echo "Missing required environment variables"
+        echo "Verify that 'workload_identity_provider' and 'service_account' are set and you are using the correct environment name"
+        exit 1
+    - id: verify-vars-is-set-az
+      name: Verify GCP environment variables
+      if: inputs.cloud_provider == 'az' && (inputs.azure_client_id == '' || inputs.azure_tenant_id == '' || inputs.azure_subscription_id == '')
+      shell: bash
+      run: |
+        echo "Missing required environment variables"
+        echo "Verify that 'azure_client_id','azure_tenant_id' and 'azure_subscription_id' are set and you are using the correct environment name"
+        exit 1
     - id: login-gcp
       name: Authenticate with Google Cloud
       if: inputs.cloud_provider == 'gcp'
