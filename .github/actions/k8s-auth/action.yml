@@ -29,7 +29,7 @@ runs:
       env:
         GHA_CLOUD_AUTH_CLOUD_PROVIDER: ${{ inputs.cloud_provider }}
       run: |
-        echo "Invalid cloud provider input: ${GHA_DOCKER_PUSH_CLOUD_PROVIDER}"
+        echo "Invalid cloud provider input: ${GHA_CLOUD_AUTH_CLOUD_PROVIDER}"
         echo "Valid options are: 'gcp' or 'az'"
         exit 1
     - id: credentials-gke
