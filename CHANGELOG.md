@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.7](https://github.com/entur/gha-meta/compare/v1.1.6...v1.1.7) (2024-05-30)
+
+
+### Bug Fixes
+
+* consistent naming, cluster location, remove unsupported type: input, prevent string injection ([e55adcf](https://github.com/entur/gha-meta/commit/e55adcfbfee0a595e4b60bd65a05cc12f892aa1b))
+* defaults ([1935c05](https://github.com/entur/gha-meta/commit/1935c05bf95875db37dd993d36d9f21a53b4a92b))
+* match az/gcp ([#32](https://github.com/entur/gha-meta/issues/32)) ([1e4fbcd](https://github.com/entur/gha-meta/commit/1e4fbcd0457940f68ba19bfb5623a7abf7914e6e))
+* var name change ([04b3be1](https://github.com/entur/gha-meta/commit/04b3be19cbdf5f8f56d04de8dafb88fed9d4144e))
+
 ## [1.1.6](https://github.com/entur/gha-meta/compare/v1.1.5...v1.1.6) (2024-05-27)
 
 
