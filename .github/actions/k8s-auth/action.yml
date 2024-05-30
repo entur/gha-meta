@@ -1,66 +1,69 @@
 name: Entur/Meta/KubernetesAuth
+description: Authenticate with Kubernetes cluster
 inputs:
   environment:
     description: "The target environment"
     required: true
-    type: string
+  cloud_provider:
+    description: "Which cloud service provider to use - Google Cloud: 'gcp' or Azure: 'az'"
+    default: "gcp"
   github_token:
-    type: string
+    description: "GitHub token"
     required: true
   project_id:
-    type: string
-  cluster_name:
-    type: string
-  cloud_provider:
-    description: "Which repository to use. GCP/Azure"
-    type: string
-    default: "GCP"
-  azure_cluster_resource_group:
-    type: string
+    description: "Google Cloud project ID, required when using Google Cloud"
     default: ""
-  azure_cluster_name:
-    type: string
+  cluster_name:
+    description: "Name of the Kubernetes cluster, required when using Azure"
+  gcp_cluster_location:
+    description: "Location of the Kubernetes cluster, GCP option"
+    default: "europe-west1"
+  azure_cluster_resource_group:
+    description: "Azure cluster resource group, required when using Azure"
     default: ""
 
 runs:
   using: "composite"
   steps:
-    - id: set-env
-      shell: bash
-      run: |
-        echo "GHA_KUBERNETES_AUTH_CLOUD_PROVIDER=${{ inputs.cloud_provider }}" >> $GITHUB_ENV
     - id: verify-cloud-provider
-      if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER != 'GCP' && env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER != 'Azure'
+      if: inputs.cloud_provider != 'gcp' && inputs.cloud_provider != 'az'
       shell: bash
+      env:
+        GHA_CLOUD_AUTH_CLOUD_PROVIDER: ${{ inputs.cloud_provider }}
       run: |
-        echo "cloud_provider can only be GCP or Azure"
+        echo "Invalid cloud provider input: ${GHA_DOCKER_PUSH_CLOUD_PROVIDER}"
+        echo "Valid options are: 'gcp' or 'az'"
         exit 1
-    - id: get-custom-credentials-gcp
-      if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER == 'GCP' && (inputs.cluster_name != '' || inputs.project_id != '')
+    - id: credentials-gke
+      name: Authenticate with Google Cloud
+      if: inputs.cloud_provider == 'gcp' && (inputs.cluster_name == '' && inputs.project_id == '')
+      uses: google-github-actions/get-gke-credentials@v1
+      with:
+        project_id: "ent-kub-${{inputs.environment}}"
+        cluster_name: "kub-ent-${{inputs.environment}}-001"
+        location: ${{ inputs.gcp_cluster_location }}
+    - id: credentials-gke-custom
+      name: Authenticate with Google Cloud (Custom Clusters)
+      if: inputs.cloud_provider == 'gcp' && (inputs.cluster_name != '' && inputs.project_id != '')
       uses: google-github-actions/get-gke-credentials@v1
       with:
         project_id: ${{ inputs.project_id }}
-        cluster_name: ${{inputs.cluster_name }}
-        location: "europe-west1" # TODO: fix jp
-    - id: get-golden-path-credentials-gcp
-      if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER == 'GCP' && (inputs.cluster_name == '' && inputs.project_id == '')
-      uses: google-github-actions/get-gke-credentials@v1
-      with:
-        project_id: "ent-kub-${{inputs.environment}}" # TODO: fix jp
-        cluster_name: "kub-ent-${{inputs.environment}}-001" # TODO: fix jp
-        location: "europe-west1" # TODO: fix jp
+        cluster_name: ${{ inputs.cluster_name }}
+        location: ${{ inputs.gcp_cluster_location }}
     - id: kubelogin-azure
-      if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER == 'Azure'
+      name: Authenticate with Azure Kubernetes cluster
+      if: inputs.cloud_provider == 'az'
       uses: azure/use-kubelogin@v1
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
         kubelogin-version: "latest"
     - id: set-context-azure
-      if: env.GHA_KUBERNETES_AUTH_CLOUD_PROVIDER == 'Azure'
+      name: Set context for Azure Kubernetes cluster
+      if: inputs.cloud_provider == 'az'
       uses: azure/aks-set-context@v3
       with:
         resource-group: ${{ inputs.azure_cluster_resource_group }}
-        cluster-name: ${{ inputs.azure_cluster_name }}
+        cluster-name: ${{ inputs.cluster_name }}
         admin: false
         use-kubelogin: true

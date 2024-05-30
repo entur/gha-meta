@@ -1,50 +1,49 @@
 name: Entur/Meta/CloudAuth
+description: Authenticate with cloud provider
 inputs:
   environment:
-    description: "The target environment"
-    required: true
-    type: string
+    description: "GitHub environment to use Google Cloud: (dev, tst, prd) or Azure: (az-dev, az-test, az-prod)"
+    default: "prd"
   cloud_provider:
-    description: "Which repository to use. GCP/Azure"
-    type: string
-    default: "GCP"
+    description: "Which cloud service provider to use - Google Cloud: 'gcp' or Azure: 'az'"
+    default: "gcp"
   workload_identity_provider:
-    type: string
+    description: "Workload identity provider to use for authentication"
     default: ""
   service_account:
-    type: string
+    description: "Service account to use for authentication"
     default: ""
   azure_client_id:
-    type: string
+    description: "Azure client ID"
     default: ""
   azure_tenant_id:
-    type: string
+    description: "Azure tenant ID"
     default: ""
   azure_subscription_id:
-    type: string
+    description: "Azure subscription ID"
     default: ""
-
 runs:
   using: "composite"
   steps:
-    - id: set-env
-      shell: bash
-      run: |
-        echo "GHA_CLOUD_AUTH_CLOUD_PROVIDER=${{ inputs.cloud_provider }}" >> $GITHUB_ENV
     - id: verify-cloud-provider
-      if: env.GHA_CLOUD_AUTH_CLOUD_PROVIDER != 'GCP' && env.GHA_CLOUD_AUTH_CLOUD_PROVIDER != 'Azure'
+      if: inputs.cloud_provider != 'gcp' && inputs.cloud_provider != 'az'
       shell: bash
+      env:
+        GHA_CLOUD_AUTH_CLOUD_PROVIDER: ${{ inputs.cloud_provider }}
       run: |
-        echo "cloud_provider can only be GCP or Azure"
+        echo "Invalid cloud provider input: ${GHA_DOCKER_PUSH_CLOUD_PROVIDER}"
+        echo "Valid options are: 'gcp' or 'az'"
         exit 1
     - id: login-gcp
-      if: env.GHA_CLOUD_AUTH_CLOUD_PROVIDER == 'GCP'
+      name: Authenticate with Google Cloud
+      if: inputs.cloud_provider == 'gcp'
       uses: google-github-actions/auth@v2.1.2
       with:
         workload_identity_provider: ${{ inputs.workload_identity_provider }}
         service_account: ${{ inputs.service_account }}
     - id: login-azure
-      if: env.GHA_CLOUD_AUTH_CLOUD_PROVIDER == 'Azure'
+      name: Authenticate with Azure
+      if: inputs.cloud_provider == 'az'
       uses: Azure/login@v2
       with:
         client-id: ${{ inputs.azure_client_id }}
