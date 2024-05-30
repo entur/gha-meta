@@ -3,25 +3,20 @@ description: Authenticate with cloud provider
 inputs:
   environment:
     description: "GitHub environment to use Google Cloud: (dev, tst, prd) or Azure: (az-dev, az-test, az-prod)"
-    default: "prd"
+    required: true
   cloud_provider:
     description: "Which cloud service provider to use - Google Cloud: 'gcp' or Azure: 'az'"
     default: "gcp"
   workload_identity_provider:
     description: "Workload identity provider to use for authentication"
-    default: ""
   service_account:
     description: "Service account to use for authentication"
-    default: ""
   azure_client_id:
     description: "Azure client ID"
-    default: ""
   azure_tenant_id:
     description: "Azure tenant ID"
-    default: ""
   azure_subscription_id:
     description: "Azure subscription ID"
-    default: ""
 runs:
   using: "composite"
   steps:

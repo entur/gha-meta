@@ -15,19 +15,14 @@ inputs:
     default: "access_token"
   workload_identity_provider:
     description: "Workload identity provider to use for authentication"
-    default: ""
   service_account:
     description: "Service account to use for authentication"
-    default: ""
   azure_client_id:
     description: Azure client ID
-    default: ""
   azure_tenant_id:
     description: Azure tenant ID
-    default: ""
   azure_subscription_id:
     description: "Azure subscription ID"
-    default: ""
 
 runs:
   using: "composite"
