@@ -58,8 +58,8 @@ runs:
           echo "GOOGLE_CLUSTER_NAME=${GOOGLE_CLUSTER_NAME}" >> $GITHUB_ENV
         fi
         if [ "${GOOGLE_CLUSTER_LOCATION}" == "europe-west1" ]; then
-          echo "Cluster location is not set, using default"
-          echo "GOOGLE_CLUSTER_LOCATION=europe-west1" >> $GITHUB_ENV
+          echo "Cluster location set to europe-west1""
+          echo "GOOGLE_CLUSTER_LOCATION=${GOOGLE_CLUSTER_LOCATION}" >> $GITHUB_ENV
         elif [ "${GOOGLE_CLUSTER_LOCATION}" == "europe-west4" ]; then
           echo "Setting cluster location to ${GOOGLE_CLUSTER_LOCATION}"
           echo "GOOGLE_CLUSTER_LOCATION=${GOOGLE_CLUSTER_LOCATION}" >> $GITHUB_ENV
