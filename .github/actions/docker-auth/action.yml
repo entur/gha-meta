@@ -13,9 +13,9 @@ inputs:
       tokens, specify "access_token". For OIDC tokens, specify "id_token". To
       skip token generation, leave this value empty.
     default: "access_token"
-  workload_identity_provider:
+  gcp_workload_identity_provider:
     description: "Workload identity provider to use for authentication"
-  service_account:
+  gcp_service_account:
     description: "Service account to use for authentication"
   azure_client_id:
     description: Azure client ID

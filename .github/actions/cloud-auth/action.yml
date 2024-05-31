@@ -7,10 +7,10 @@ inputs:
   cloud_provider:
     description: "Which cloud service provider to use - Google Cloud: 'gcp' or Azure: 'az'"
     default: "gcp"
-  workload_identity_provider:
-    description: "Workload identity provider to use for authentication"
-  service_account:
-    description: "Service account to use for authentication"
+  gcp_workload_identity_provider:
+    description: "Workload identity provider to use for authentication against Google Cloud"
+  gcp_service_account:
+    description: "Service account to use for authentication towards Google Cloud"
   azure_client_id:
     description: "Azure client ID"
   azure_tenant_id:
@@ -31,7 +31,7 @@ runs:
         exit 1
     - id: verify-vars-is-set-gcp
       name: Verify GCP environment variables
-      if: inputs.cloud_provider == 'gcp' && (inputs.workload_identity_provider == '' || inputs.service_account == '')
+      if: inputs.cloud_provider == 'gcp' && (inputs.gcp_workload_identity_provider == '' || inputs.gcp_service_account == '')
       shell: bash
       run: |
         echo "Missing required environment variables"
@@ -50,8 +50,8 @@ runs:
       if: inputs.cloud_provider == 'gcp'
       uses: google-github-actions/auth@v2.1.2
       with:
-        workload_identity_provider: ${{ inputs.workload_identity_provider }}
-        service_account: ${{ inputs.service_account }}
+        workload_identity_provider: ${{ inputs.gcp_workload_identity_provider }}
+        service_account: ${{ inputs.gcp_service_account }}
     - id: login-azure
       name: Authenticate with Azure
       if: inputs.cloud_provider == 'az'
