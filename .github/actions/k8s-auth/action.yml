@@ -2,11 +2,13 @@ name: Entur/Meta/KubernetesAuth
 description: Authenticate with Kubernetes cluster
 inputs:
   environment:
-    description: "The target environment"
-    required: true
+    description: "GitHub environment to use Google Cloud: (dev, tst, prd) or Azure: (az-dev, az-test, az-prod)"
+    default: "prd"
   cloud_provider:
     description: "Which cloud service provider to use - Google Cloud: 'gcp' or Azure: 'az'"
     default: "gcp"
+  token:
+    description: "Kubernetes token, required when using Azure"
   project_id:
     description: "Google Cloud project ID, required when using Google Cloud"
   cluster_name:
@@ -49,6 +51,8 @@ runs:
       name: Authenticate with Azure Kubernetes cluster
       if: inputs.cloud_provider == 'az'
       uses: azure/use-kubelogin@v1
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
       with:
         kubelogin-version: "v1.2"
     - id: set-context-azure
