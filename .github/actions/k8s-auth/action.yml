@@ -49,10 +49,8 @@ runs:
       name: Authenticate with Azure Kubernetes cluster
       if: inputs.cloud_provider == 'az'
       uses: azure/use-kubelogin@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        kubelogin-version: "latest"
+        kubelogin-version: "v1.2"
     - id: set-context-azure
       name: Set context for Azure Kubernetes cluster
       if: inputs.cloud_provider == 'az'
