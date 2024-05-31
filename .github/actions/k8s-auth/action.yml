@@ -83,7 +83,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.azure_token }}
       with:
-        kubelogin-version: "v1.2"
+        kubelogin-version: "latest"
     - id: set-context-azure
       name: Set context for Azure Kubernetes cluster
       if: inputs.cloud_provider == 'az'
