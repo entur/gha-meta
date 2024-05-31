@@ -38,7 +38,7 @@ runs:
         echo "Verify that 'workload_identity_provider' and 'service_account' are set and you are using the correct environment name"
         exit 1
     - id: verify-vars-is-set-az
-      name: Verify GCP environment variables
+      name: Verify Azure environment variables
       if: inputs.cloud_provider == 'az' && (inputs.azure_client_id == '' || inputs.azure_tenant_id == '' || inputs.azure_subscription_id == '')
       shell: bash
       run: |
