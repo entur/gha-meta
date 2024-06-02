@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.8](https://github.com/entur/gha-meta/compare/v1.1.7...v1.1.8) (2024-06-02)
+
+
+### Bug Fixes
+
+* add checks ([2dbe15b](https://github.com/entur/gha-meta/commit/2dbe15b0b3744c09371b55edc1909c7eaf80065f))
+* input names ([a9358eb](https://github.com/entur/gha-meta/commit/a9358eb054a2704040d5bb5ea4601232b02768b1))
+* print changed files and ff-only on pull ([4226a5d](https://github.com/entur/gha-meta/commit/4226a5d1a58cf652ef968f32897ff1312374eed0))
+* revert back to use latest, tag issue? ([f90485e](https://github.com/entur/gha-meta/commit/f90485e7ea30eebcf7639299f0e84d437879d741))
+* test token ([b1ee442](https://github.com/entur/gha-meta/commit/b1ee4426a8a5598bf8217aa47098f759d2716cbc))
+
 ## [1.1.7](https://github.com/entur/gha-meta/compare/v1.1.6...v1.1.7) (2024-05-30)
 
 
