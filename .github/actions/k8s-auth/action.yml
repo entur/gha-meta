@@ -2,23 +2,24 @@ name: Entur/Meta/KubernetesAuth
 description: Authenticate with Kubernetes cluster
 inputs:
   environment:
-    description: "The target environment"
-    required: true
+    description: "GitHub environment to use Google Cloud: (dev, tst, prd) or Azure: (az-dev, az-test, az-prod)"
+    default: "prd"
   cloud_provider:
     description: "Which cloud service provider to use - Google Cloud: 'gcp' or Azure: 'az'"
     default: "gcp"
-  github_token:
-    description: "GitHub token"
-    required: true
-  project_id:
+  gcp_project_id:
     description: "Google Cloud project ID, required when using Google Cloud"
-  cluster_name:
-    description: "Name of the Kubernetes cluster, required when using Azure"
+  gcp_cluster_name:
+    description: "Name of the Kubernetes cluster, required when using Google Cloud"
   gcp_cluster_location:
     description: "Location of the Kubernetes cluster, GCP option"
     default: "europe-west1"
   azure_cluster_resource_group:
     description: "Azure cluster resource group, required when using Azure"
+  azure_cluster_name:
+    description: "Azure cluster name, required when using Azure"
+  azure_token:
+    description: "Kubernetes token, required when using Azure"
 
 runs:
   using: "composite"
@@ -32,28 +33,55 @@ runs:
         echo "Invalid cloud provider input: ${GHA_CLOUD_AUTH_CLOUD_PROVIDER}"
         echo "Valid options are: 'gcp' or 'az'"
         exit 1
-    - id: credentials-gke
+    - id: set-vars-gcp
+      name: Set GCP environment variables
+      if: inputs.cloud_provider == 'gcp'
+      shell: bash
+      env:
+        GOOGLE_PROJECT_ID: ${{ inputs.gcp_project_id }}
+        GOOGLE_CLUSTER_NAME: ${{ inputs.gcp_cluster_name }}
+        GOOGLE_CLUSTER_LOCATION: ${{ inputs.gcp_cluster_location }}
+        ENVIRONMENT: ${{ inputs.environment }}
+      run: |
+        if [ -z "${GOOGLE_PROJECT_ID}" ]; then
+          echo "Project ID is not set, using default"
+          echo "GOOGLE_PROJECT_ID=ent-kub-${ENVIRONMENT}" >> $GITHUB_ENV
+        else
+          echo "Setting project ID to ${GOOGLE_PROJECT_ID}"
+          echo "GOOGLE_PROJECT_ID=${GOOGLE_PROJECT_ID}" >> $GITHUB_ENV
+        fi
+        if [ -z "${GOOGLE_CLUSTER_NAME}" ]; then
+          echo "Cluster name is not set, using default"
+          echo "GOOGLE_CLUSTER_NAME=kub-ent-${ENVIRONMENT}-001" >> $GITHUB_ENV
+        else
+          echo "Setting cluster name to ${GOOGLE_CLUSTER_NAME}"
+          echo "GOOGLE_CLUSTER_NAME=${GOOGLE_CLUSTER_NAME}" >> $GITHUB_ENV
+        fi
+        if [ "${GOOGLE_CLUSTER_LOCATION}" == "europe-west1" ]; then
+          echo "Cluster location set to europe-west1"
+          echo "GOOGLE_CLUSTER_LOCATION=${GOOGLE_CLUSTER_LOCATION}" >> $GITHUB_ENV
+        elif [ "${GOOGLE_CLUSTER_LOCATION}" == "europe-west4" ]; then
+          echo "Setting cluster location to ${GOOGLE_CLUSTER_LOCATION}"
+          echo "GOOGLE_CLUSTER_LOCATION=${GOOGLE_CLUSTER_LOCATION}" >> $GITHUB_ENV
+        else
+          echo "Invalid cluster location: ${GOOGLE_CLUSTER_LOCATION}"
+          echo "Valid options are: 'europe-west1' or 'europe-west4'"
+          exit 1
+        fi
+    - id: auth-gcp
       name: Authenticate with Google Cloud
-      if: inputs.cloud_provider == 'gcp' && (inputs.cluster_name == '' && inputs.project_id == '')
+      if: inputs.cloud_provider == 'gcp'
       uses: google-github-actions/get-gke-credentials@v1
       with:
-        project_id: "ent-kub-${{inputs.environment}}"
-        cluster_name: "kub-ent-${{inputs.environment}}-001"
-        location: ${{ inputs.gcp_cluster_location }}
-    - id: credentials-gke-custom
-      name: Authenticate with Google Cloud (Custom Clusters)
-      if: inputs.cloud_provider == 'gcp' && (inputs.cluster_name != '' && inputs.project_id != '')
-      uses: google-github-actions/get-gke-credentials@v1
-      with:
-        project_id: ${{ inputs.project_id }}
-        cluster_name: ${{ inputs.cluster_name }}
-        location: ${{ inputs.gcp_cluster_location }}
+        project_id: ${{ env.GOOGLE_PROJECT_ID }}
+        cluster_name: ${{ env.GOOGLE_CLUSTER_NAME }}
+        location: ${{ env.GOOGLE_CLUSTER_LOCATION }}
     - id: kubelogin-azure
       name: Authenticate with Azure Kubernetes cluster
       if: inputs.cloud_provider == 'az'
       uses: azure/use-kubelogin@v1
       env:
-        GITHUB_TOKEN: ${{ inputs.github_token }}
+        GITHUB_TOKEN: ${{ inputs.azure_token }}
       with:
         kubelogin-version: "latest"
     - id: set-context-azure
@@ -62,6 +90,6 @@ runs:
       uses: azure/aks-set-context@v3
       with:
         resource-group: ${{ inputs.azure_cluster_resource_group }}
-        cluster-name: ${{ inputs.cluster_name }}
+        cluster-name: ${{ inputs.azure_cluster_name }}
         admin: false
         use-kubelogin: true

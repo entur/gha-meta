@@ -13,9 +13,9 @@ inputs:
       tokens, specify "access_token". For OIDC tokens, specify "id_token". To
       skip token generation, leave this value empty.
     default: "access_token"
-  workload_identity_provider:
+  gcp_workload_identity_provider:
     description: "Workload identity provider to use for authentication"
-  service_account:
+  gcp_service_account:
     description: "Service account to use for authentication"
   azure_client_id:
     description: Azure client ID
@@ -35,6 +35,22 @@ runs:
       run: |
         echo "Invalid cloud provider input: ${GHA_CLOUD_AUTH_CLOUD_PROVIDER}"
         echo "Valid options are: 'gcp' or 'az'"
+        exit 1
+    - id: verify-vars-is-set-gcp
+      name: Verify GCP environment variables
+      if: inputs.cloud_provider == 'gcp' && (inputs.workload_identity_provider == '' || inputs.service_account == '')
+      shell: bash
+      run: |
+        echo "Missing required environment variables"
+        echo "Verify that 'workload_identity_provider' and 'service_account' are set and you are using the correct environment name"
+        exit 1
+    - id: verify-vars-is-set-az
+      name: Verify Azure environment variables
+      if: inputs.cloud_provider == 'az' && (inputs.azure_client_id == '' || inputs.azure_tenant_id == '' || inputs.azure_subscription_id == '')
+      shell: bash
+      run: |
+        echo "Missing required environment variables"
+        echo "Verify that 'azure_client_id','azure_tenant_id' and 'azure_subscription_id' are set and you are using the correct environment name"
         exit 1
     - id: login-gcp
       name: Authenticate with Google Cloud

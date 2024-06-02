@@ -13,7 +13,6 @@ on:
         description: "Job timeout in minutes"
         type: number
         default: 5
-
 jobs:
   update-doc:
     runs-on: ubuntu-24.04
@@ -21,27 +20,29 @@ jobs:
     permissions:
       contents: write
     steps:
-      - id: set-env
-        shell: bash
-        run: |
-          echo "GHA_META_WORKFLOW_FILE=${{ inputs.workflow_file }}" >> $GITHUB_ENV
-          echo "GHA_META_README_FILE=${{ inputs.readme_file }}" >> $GITHUB_ENV
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
       - uses: tj-actions/auto-doc@v3
         with:
-          filename: ${{ env.GHA_META_WORKFLOW_FILE}}
+          filename: ${{ inputs.workflow_file }}
           reusable: true
-          output: ${{ env.GHA_META_README_FILE }}
+          output: ${{ inputs.readme_file }}
           use_code_blocks: true
       - uses: tj-actions/verify-changed-files@v20
         id: verify-changed-files
         with:
           files: |
-            ${{ env.GHA_META_README_FILE }}
+            ${{ inputs.readme_file }}
+      - name: Printout changed files
+        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        env:
+          CHANGED_FILES: ${{ steps.verify-changed-files.outputs.changed_files }}
+        run: |
+          echo "Changed files: $CHANGED_FILES"
       - uses: EndBug/add-and-commit@v9
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         with:
           message: "docs: Update workflow documentation"
-          add: ${{ env.GHA_META_README_FILE }}
+          add: ${{ inputs.readme_file }}
+          pull: "--ff-only"
