@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.8](https://github.com/entur/gha-meta/compare/v1.1.7...v1.1.8) (2024-06-02)
+
+
+### Bug Fixes
+
+* add checks ([2dbe15b](https://github.com/entur/gha-meta/commit/2dbe15b0b3744c09371b55edc1909c7eaf80065f))
+* double " ([3ec92b3](https://github.com/entur/gha-meta/commit/3ec92b3a76926977a3bd51af9ddc9a994fed9cc7))
+* input names ([a9358eb](https://github.com/entur/gha-meta/commit/a9358eb054a2704040d5bb5ea4601232b02768b1))
+* print changed files and ff-only on pull ([4226a5d](https://github.com/entur/gha-meta/commit/4226a5d1a58cf652ef968f32897ff1312374eed0))
+* remove github token input, refer to secret ([8901838](https://github.com/entur/gha-meta/commit/8901838e4dd0297d57579bc29e15cc8562fbeccd))
+* remove github token input, refer to secret, add var checks ([#34](https://github.com/entur/gha-meta/issues/34)) ([0d50fdb](https://github.com/entur/gha-meta/commit/0d50fdbb7a8fe5c23fe8ff6aecfdd232e486f86b))
+* remove github_token and set version - as recommended ([0b6b6b0](https://github.com/entur/gha-meta/commit/0b6b6b009ef047dd81557132b92045f007966d85))
+* revert back to use latest, tag issue? ([f90485e](https://github.com/entur/gha-meta/commit/f90485e7ea30eebcf7639299f0e84d437879d741))
+* stuff ([7057145](https://github.com/entur/gha-meta/commit/70571455c30a46b7d6dce28ab997f1a0ab04d496))
+* test token ([b1ee442](https://github.com/entur/gha-meta/commit/b1ee4426a8a5598bf8217aa47098f759d2716cbc))
+
 ## [1.1.7](https://github.com/entur/gha-meta/compare/v1.1.6...v1.1.7) (2024-05-30)
 
 
