@@ -14,3 +14,27 @@ jobs:
     with:
       workflow_file: .github/workflows/release.yml
       readme_file: README-release.md
+
+  test-local-actions:
+    runs-on: ubuntu-24.04
+    environment: dev
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/cloud-auth
+        with:
+          environment: dev
+          cloud_provider: gcp
+          gcp_workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ vars.SERVICE_ACCOUNT }}
+      - uses: ./.github/actions/k8s-auth
+        with:
+          environment: dev
+          cloud_provider: gcp
+      - uses: ./.github/actions/docker-auth
+        with:
+          environment: dev
+          cloud_provider: gcp
+          gcp_workload_identity_provider: ${{ vars.CI_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ vars.CI_SERVICE_ACCOUNT }}
