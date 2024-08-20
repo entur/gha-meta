@@ -38,11 +38,11 @@ runs:
         exit 1
     - id: verify-vars-is-set-gcp
       name: Verify GCP environment variables
-      if: inputs.cloud_provider == 'gcp' && (inputs.workload_identity_provider == '' || inputs.service_account == '')
+      if: inputs.cloud_provider == 'gcp' && (inputs.gcp_workload_identity_provider == '' || inputs.gcp_service_account == '')
       shell: bash
       run: |
         echo "Missing required environment variables"
-        echo "Verify that 'workload_identity_provider' and 'service_account' are set and you are using the correct environment name"
+        echo "Verify that 'gcp_workload_identity_provider' and 'gcp_service_account' are set and you are using the correct environment name"
         exit 1
     - id: verify-vars-is-set-az
       name: Verify Azure environment variables
@@ -57,8 +57,8 @@ runs:
       if: inputs.cloud_provider == 'gcp'
       uses: google-github-actions/auth@v2.1.2
       with:
-        workload_identity_provider: ${{ inputs.workload_identity_provider }}
-        service_account: ${{ inputs.service_account }}
+        workload_identity_provider: ${{ inputs.gcp_workload_identity_provider }}
+        service_account: ${{ inputs.gcp_service_account }}
         token_format: ${{ inputs.token_format }}
     - id: login-gcr
       name: Authenticate with Google Container Registry
