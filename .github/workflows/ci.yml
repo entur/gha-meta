@@ -16,7 +16,7 @@ jobs:
       readme_file: README-release.md
 
   # Run tests on actions
-  test-cloud-and-k8s-auth:
+  test-local-actions:
     runs-on: ubuntu-24.04
     environment: dev
     steps:
@@ -30,11 +30,9 @@ jobs:
         with:
           environment: dev
           cloud_provider: gcp
-
-  test-docker-auth:
-    uses: ./.github/actions/docker-auth.yml
-    with:
-      environment: dev
-      cloud_provider: gcp
-      workload_identity_provider: ${{ vars.CI_WORKLOAD_IDENTITY_PROVIDER }}
-      service_account: ${{ vars.CI_SERVICE_ACCOUNT }}
+      - uses: ./.github/actions/docker-auth.yml
+        with:
+          environment: dev
+          cloud_provider: gcp
+          workload_identity_provider: ${{ vars.CI_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.CI_SERVICE_ACCOUNT }}
