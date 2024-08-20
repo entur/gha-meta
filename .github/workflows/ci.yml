@@ -33,7 +33,7 @@ jobs:
         with:
           environment: dev
           cloud_provider: gcp
-      - uses: ./.github/actions/docker-auth.yml
+      - uses: ./.github/actions/docker-auth
         with:
           environment: dev
           cloud_provider: gcp
