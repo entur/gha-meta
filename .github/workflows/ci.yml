@@ -15,7 +15,6 @@ jobs:
       workflow_file: .github/workflows/release.yml
       readme_file: README-release.md
 
-  # Run tests on actions
   test-local-actions:
     runs-on: ubuntu-24.04
     environment: dev
