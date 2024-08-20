@@ -19,6 +19,8 @@ jobs:
   test-local-actions:
     runs-on: ubuntu-24.04
     environment: dev
+    permissions:
+      id-token: read
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/cloud-auth
