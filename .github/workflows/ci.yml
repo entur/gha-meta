@@ -32,7 +32,7 @@ jobs:
           cloud_provider: gcp
 
   test-docker-auth:
-    uses: ./.github/workflows/docker-auth.yml
+    uses: ./.github/actions/docker-auth.yml
     with:
       environment: dev
       cloud_provider: gcp
