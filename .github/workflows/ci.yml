@@ -14,6 +14,21 @@ jobs:
     with:
       workflow_file: .github/workflows/release.yml
       readme_file: README-release.md
+  generate-doc-for-cloud-auth:
+    uses: ./.github/workflows/auto-doc.yml
+    with:
+      workflow_file: .github/actions/cloud-auth/action.yml
+      readme_file: README-cloud-auth.md
+  generate-doc-for-docker-auth:
+    uses: ./.github/workflows/auto-doc.yml
+    with:
+      workflow_file: .github/actions/docker-auth/action.yml
+      readme_file: README-docker-auth.md
+  generate-doc-for-k8s-auth:
+    uses: ./.github/workflows/auto-doc.yml
+    with:
+      workflow_file: .github/actions/k8s-auth/action.yml
+      readme_file: README-k8s-auth.md
 
   test-local-actions-gcp:
     runs-on: ubuntu-24.04

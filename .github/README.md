@@ -13,6 +13,6 @@ Reusable workflows for making reusable workflows
 
 Reusable actions
 
-- `cloud-auth` for GCP and Azure
-- `k8s-auth` for GKE and AKS
-- `docker-auth` for GCR or ACR
+- [cloud-auth](/README-cloud-auth.md) for GCP and Azure
+- [k8s-auth](/README-cloud-auth.md) for GKE and AKS
+- [docker-auth](/README-docker-auth.md) for GCR or ACR

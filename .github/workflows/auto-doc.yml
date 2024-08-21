@@ -13,6 +13,10 @@ on:
         description: "Job timeout in minutes"
         type: number
         default: 5
+      reusable:
+        description: "Boolean Indicating whether the file is a reusable workflow"
+        type: boolean
+        default: true
 jobs:
   update-doc:
     runs-on: ubuntu-24.04
@@ -26,7 +30,7 @@ jobs:
       - uses: tj-actions/auto-doc@v3
         with:
           filename: ${{ inputs.workflow_file }}
-          reusable: true
+          reusable: ${{ inputs.reusable }}
           output: ${{ inputs.readme_file }}
           use_code_blocks: true
       - uses: tj-actions/verify-changed-files@v20
