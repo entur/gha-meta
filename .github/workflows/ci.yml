@@ -10,23 +10,27 @@ jobs:
       workflow_file: .github/workflows/auto-doc.yml
       readme_file: README-auto-doc.md
   generate-doc-for-release:
+    needs: generate-doc-for-auto-doc
     uses: ./.github/workflows/auto-doc.yml
     with:
       workflow_file: .github/workflows/release.yml
       readme_file: README-release.md
   generate-doc-for-cloud-auth:
+    needs: generate-doc-for-release
     uses: ./.github/workflows/auto-doc.yml
     with:
       workflow_file: .github/actions/cloud-auth/action.yml
       reusable: false
       readme_file: README-cloud-auth.md
   generate-doc-for-docker-auth:
+    needs: generate-doc-for-cloud-auth
     uses: ./.github/workflows/auto-doc.yml
     with:
       workflow_file: .github/actions/docker-auth/action.yml
       reusable: false
       readme_file: README-docker-auth.md
   generate-doc-for-k8s-auth:
+    needs: generate-doc-for-docker-auth
     uses: ./.github/workflows/auto-doc.yml
     with:
       workflow_file: .github/actions/k8s-auth/action.yml
