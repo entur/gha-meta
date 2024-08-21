@@ -18,16 +18,19 @@ jobs:
     uses: ./.github/workflows/auto-doc.yml
     with:
       workflow_file: .github/actions/cloud-auth/action.yml
+      reusable: false
       readme_file: README-cloud-auth.md
   generate-doc-for-docker-auth:
     uses: ./.github/workflows/auto-doc.yml
     with:
       workflow_file: .github/actions/docker-auth/action.yml
+      reusable: false
       readme_file: README-docker-auth.md
   generate-doc-for-k8s-auth:
     uses: ./.github/workflows/auto-doc.yml
     with:
       workflow_file: .github/actions/k8s-auth/action.yml
+      reusable: false
       readme_file: README-k8s-auth.md
 
   test-local-actions-gcp:
