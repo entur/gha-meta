@@ -41,28 +41,28 @@ jobs:
 
   test-local-actions-azure:
     runs-on: ubuntu-24.04
-    environment: dev
+    environment: az-dev
     permissions:
       id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/cloud-auth
         with:
-          environment: dev
+          environment: az-dev
           cloud_provider: az
           azure_client_id: ${{ vars.AZURE_CLIENT_ID }}
           azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
           azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       - uses: ./.github/actions/k8s-auth
         with:
-          environment: dev
+          environment: az-dev
           cloud_provider: az
           azure_cluster_resource_group: ${{ vars.AZURE_CLUSTER_RESOURCE_GROUP }}
           azure_cluster_name: ${{ vars.AZURE_CLUSTER_NAME }}
           azure_token: ${{ secrets.GITHUB_TOKEN }}
       - uses: ./.github/actions/docker-auth
         with:
-          environment: dev
+          environment: az-dev
           cloud_provider: az
           azure_client_id: ${{ vars.AZURE_CLIENT_ID }}
           azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
