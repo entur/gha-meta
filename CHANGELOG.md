@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.9](https://github.com/entur/gha-meta/compare/v1.1.8...v1.1.9) (2024-08-26)
+
+
+### Bug Fixes
+
+* update to use latest version of get-gke-credentials ([#42](https://github.com/entur/gha-meta/issues/42)) ([180bfd0](https://github.com/entur/gha-meta/commit/180bfd0c8c3a02ba1c3f0551c0a2b800542e737e))
+
 ## [1.1.8](https://github.com/entur/gha-meta/compare/v1.1.7...v1.1.8) (2024-06-02)
 
 
