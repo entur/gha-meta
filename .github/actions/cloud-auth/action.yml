@@ -45,6 +45,16 @@ runs:
         echo "Missing required environment variables"
         echo "Verify that 'azure_client_id','azure_tenant_id' and 'azure_subscription_id' are set and you are using the correct environment name"
         exit 1
+    - id: verify-branch-repository-name
+      name: Verify branch and repo name does not exceed 127 characters
+      shell: bash
+      run: |
+        BRANCH_REPO=$(echo "${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}")
+        echo $BRANCH_REPO
+        if [ "${#BRANCH_REPO}" -gt 127 ]; then
+          echo "ERROR: The combination of Repository and Branch name is too long, reduce the length of the branch name."
+          exit 1
+        fi
     - id: login-gcp
       name: Authenticate with Google Cloud
       if: inputs.cloud_provider == 'gcp'
