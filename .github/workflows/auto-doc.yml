@@ -23,13 +23,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-      - uses: tj-actions/auto-doc@v3
+      - uses: tj-actions/auto-doc@79cbc18cd7c4b037bb2fe25199cb14fef4bbad43 #v3
         with:
           filename: ${{ inputs.workflow_file }}
           reusable: true
           output: ${{ inputs.readme_file }}
           use_code_blocks: true
-      - uses: tj-actions/verify-changed-files@v20
+      - uses: tj-actions/verify-changed-files@6ed7632824d235029086612d4330d659005af687 #v20
         id: verify-changed-files
         with:
           files: |
@@ -40,7 +40,7 @@ jobs:
           CHANGED_FILES: ${{ steps.verify-changed-files.outputs.changed_files }}
         run: |
           echo "Changed files: $CHANGED_FILES"
-      - uses: EndBug/add-and-commit@v9
+      - uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9.1.4
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         with:
           message: "docs: Update workflow documentation"

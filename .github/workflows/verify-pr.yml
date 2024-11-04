@@ -1,0 +1,18 @@
+name: Verify PR
+
+on:
+  pull_request:
+  workflow_call:
+
+jobs:
+  verify-pr:
+    name: Ensure PR title complies with conventional commit conventions
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: amannn/action-semantic-pull-request@0723387faaf9b38adef4775cd42cfd5155ed6017 # v5.5.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          validateSingleCommit: true
