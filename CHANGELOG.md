@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/entur/gha-meta/compare/v1.1.9...v1.2.0) (2024-11-04)
+
+
+### Features
+
+* new verify-pr reusable workflow to check commit messages and pr title follow Conventional Commits Spec ([#48](https://github.com/entur/gha-meta/issues/48)) ([2247f7a](https://github.com/entur/gha-meta/commit/2247f7a64bad8d2e3674fe8d68669fc81fb4d068))
+
 ## [1.1.9](https://github.com/entur/gha-meta/compare/v1.1.8...v1.1.9) (2024-08-26)
 
 
