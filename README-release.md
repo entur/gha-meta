@@ -7,7 +7,12 @@ This workflow will also push git tags for the major and minor versions, this ena
 ## Inputs
 
 <!-- AUTO-DOC-INPUT:START - Do not remove or modify this section -->
-No inputs.
+
+|                                INPUT                                 |  TYPE  | REQUIRED |  DEFAULT   |                                   DESCRIPTION                                   |
+|----------------------------------------------------------------------|--------|----------|------------|---------------------------------------------------------------------------------|
+|             <a name="input_path"></a>[path](#input_path)             | string |  false   |   `"."`    |                            Path to the release code                             |
+| <a name="input_release_type"></a>[release_type](#input_release_type) | string |  false   | `"simple"` | The type of release to <br>create (simple, terraform-module, helm, maven, etc)  |
+
 <!-- AUTO-DOC-INPUT:END -->
 
 ## Outputs
