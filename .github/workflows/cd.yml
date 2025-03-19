@@ -1,0 +1,8 @@
+name: gha-meta release
+on:
+  push:
+    branches:
+      - main
+jobs:
+  release-please:
+    uses: ./.github/workflows/release.yml
