@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/entur/gha-meta/compare/v1.2.0...v1.3.0) (2025-03-20)
+
+
+### Features
+
+* allow release_type and path input ([#55](https://github.com/entur/gha-meta/issues/55)) ([022fc84](https://github.com/entur/gha-meta/commit/022fc84355eb19ba6970c32d199dd468cfcdb99a))
+
 ## [1.2.0](https://github.com/entur/gha-meta/compare/v1.1.9...v1.2.0) (2024-11-04)
 
 
