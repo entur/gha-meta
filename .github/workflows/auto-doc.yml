@@ -29,7 +29,7 @@ jobs:
           reusable: true
           output: ${{ inputs.readme_file }}
           use_code_blocks: true
-      - uses: tj-actions/verify-changed-files@6ed7632824d235029086612d4330d659005af687 #v20
+      - uses: tj-actions/verify-changed-files@a1c6acee9df209257a246f2cc6ae8cb6581c1edf #v20
         id: verify-changed-files
         with:
           files: |
