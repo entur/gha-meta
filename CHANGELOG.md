@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/entur/gha-meta/compare/v1.3.0...v1.3.1) (2025-05-14)
+
+
+### Bug Fixes
+
+* add issues: write permission ([#59](https://github.com/entur/gha-meta/issues/59)) ([8eddf44](https://github.com/entur/gha-meta/commit/8eddf44ab2c39c0f2a79a64cac08eba2d89cd7f1))
+
 ## [1.3.0](https://github.com/entur/gha-meta/compare/v1.2.0...v1.3.0) (2025-03-20)
 
 
