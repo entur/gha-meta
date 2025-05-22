@@ -31,5 +31,9 @@ jobs:
 ## Outputs
 
 <!-- AUTO-DOC-OUTPUT:START - Do not remove or modify this section -->
-No outputs.
+
+|                                     OUTPUT                                      |                         VALUE                          | DESCRIPTION |
+|---------------------------------------------------------------------------------|--------------------------------------------------------|-------------|
+| <a name="output_release_created"></a>[release_created](#output_release_created) | `"${{ jobs.release-please.outputs.release_created }}"` |             |
+
 <!-- AUTO-DOC-OUTPUT:END -->
