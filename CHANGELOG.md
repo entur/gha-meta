@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/entur/gha-meta/compare/v1.3.1...v1.4.0) (2025-05-22)
+
+
+### Features
+
+* Added release_created output to release workflow ([#61](https://github.com/entur/gha-meta/issues/61)) ([#62](https://github.com/entur/gha-meta/issues/62)) ([f67059b](https://github.com/entur/gha-meta/commit/f67059b5471dc61feb467df0604e0daa18a521e2))
+
 ## [1.3.1](https://github.com/entur/gha-meta/compare/v1.3.0...v1.3.1) (2025-05-14)
 
 
