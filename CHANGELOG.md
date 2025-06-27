@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/entur/gha-meta/compare/v1.4.0...v1.5.0) (2025-06-27)
+
+
+### Features
+
+* add support for docker login to europe-west1 GAR repositories ([#64](https://github.com/entur/gha-meta/issues/64)) ([dcbb1af](https://github.com/entur/gha-meta/commit/dcbb1af59d058419f6cc56062252bbdd38820a4d))
+
 ## [1.4.0](https://github.com/entur/gha-meta/compare/v1.3.1...v1.4.0) (2025-05-22)
 
 
