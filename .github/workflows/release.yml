@@ -33,7 +33,7 @@ jobs:
         with:
           release-type: ${{ inputs.release_type }}
           path: ${{ inputs.path }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - if: ${{ steps.release.outputs.release_created }}
         id: tag-versions
         run: |
