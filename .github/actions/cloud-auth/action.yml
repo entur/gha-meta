@@ -51,8 +51,8 @@ runs:
       run: |
         BRANCH_REPO=$(echo "${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}")
         echo $BRANCH_REPO
-        if [ "${#BRANCH_REPO}" -gt 127 ]; then
-          echo "ERROR: The combination of Repository and Branch name is too long, reduce the length of the branch name."
+        if [ "${#BRANCH_REPO}" -gt 120 ]; then
+          echo "ERROR: The combination of Repository and Branch name is too long (above 120 chars), reduce the length of the branch name."
           exit 1
         fi
     - id: login-gcp
