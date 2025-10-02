@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1](https://github.com/entur/gha-meta/compare/v1.5.0...v1.5.1) (2025-10-02)
+
+
+### Bug Fixes
+
+* Reduced char limit in the cloud-auth branch and repo name length check ([f8e8dd7](https://github.com/entur/gha-meta/commit/f8e8dd78aea883946c35eaee96d6b388322b67e0))
+* Reduced char limit in the cloud-auth branch and repo name length… ([#73](https://github.com/entur/gha-meta/issues/73)) ([f8e8dd7](https://github.com/entur/gha-meta/commit/f8e8dd78aea883946c35eaee96d6b388322b67e0))
+
 ## [1.5.0](https://github.com/entur/gha-meta/compare/v1.4.0...v1.5.0) (2025-06-27)
 
 
