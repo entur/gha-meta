@@ -21,10 +21,10 @@ jobs:
 
 <!-- AUTO-DOC-INPUT:START - Do not remove or modify this section -->
 
-|                                INPUT                                 |  TYPE  | REQUIRED |  DEFAULT   |                                   DESCRIPTION                                   |
-|----------------------------------------------------------------------|--------|----------|------------|---------------------------------------------------------------------------------|
-|             <a name="input_path"></a>[path](#input_path)             | string |  false   |   `"."`    |                            Path to the release code                             |
-| <a name="input_release_type"></a>[release_type](#input_release_type) | string |  false   | `"simple"` | The type of release to <br>create (simple, terraform-module, helm, maven, etc)  |
+|                                INPUT                                 |  TYPE  | REQUIRED |  DEFAULT   |                                       DESCRIPTION                                       |
+|----------------------------------------------------------------------|--------|----------|------------|-----------------------------------------------------------------------------------------|
+|             <a name="input_path"></a>[path](#input_path)             | string |  false   |   `"."`    | Path to the release code <br>in the repository (where the CHANGELOG.md will be placed)  |
+| <a name="input_release_type"></a>[release_type](#input_release_type) | string |  false   | `"simple"` |     The type of release to <br>create (simple, terraform-module, helm, maven, etc)      |
 
 <!-- AUTO-DOC-INPUT:END -->
 
@@ -34,6 +34,9 @@ jobs:
 
 |                                     OUTPUT                                      |                         VALUE                          | DESCRIPTION |
 |---------------------------------------------------------------------------------|--------------------------------------------------------|-------------|
+|                 <a name="output_body"></a>[body](#output_body)                  |      `"${{ jobs.release-please.outputs.body }}"`       |             |
 | <a name="output_release_created"></a>[release_created](#output_release_created) | `"${{ jobs.release-please.outputs.release_created }}"` |             |
+|           <a name="output_tag_name"></a>[tag_name](#output_tag_name)            |    `"${{ jobs.release-please.outputs.tag_name }}"`     |             |
+|             <a name="output_version"></a>[version](#output_version)             |     `"${{ jobs.release-please.outputs.version }}"`     |             |
 
 <!-- AUTO-DOC-OUTPUT:END -->
