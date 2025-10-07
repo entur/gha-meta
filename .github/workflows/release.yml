@@ -9,13 +9,19 @@ on:
         required: false
         default: "simple"
       path:
-        description: "Path to the release code"
+        description: "Path to the release code in the repository (where the CHANGELOG.md will be placed)"
         type: string
         required: false
         default: "."
     outputs:
       release_created:
         value: ${{ jobs.release-please.outputs.release_created }}
+      tag_name:
+        value: ${{ jobs.release-please.outputs.tag_name }}
+      version:
+        value: ${{ jobs.release-please.outputs.version }}
+      body:
+        value: ${{ jobs.release-please.outputs.body }}
 
 jobs:
   release-please:
@@ -26,24 +32,64 @@ jobs:
       pull-requests: write
     timeout-minutes: 30
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
+      release_created: ${{ steps.release.outputs.releases_created }}
+      tag_name: ${{ steps.release.outputs[steps.post-release.outputs.tag_name] }}
+      version: ${{ steps.release.outputs[steps.post-release.outputs.version] }}
+      body: ${{ steps.release.outputs[steps.post-release.outputs.body] }}
     steps:
+      # Release-Please is set up to handle explicitly '.' instead of './', so we correct the path
+      # https://github.com/googleapis/release-please-action/blob/main/src/index.ts#L179
+      - id: pre-release
+        shell: bash
+        env:
+          GHA_RELEASE_PATH: ${{ inputs.path }}
+        run: |
+          if [[ "$GHA_RELEASE_PATH" == "" || "$GHA_RELEASE_PATH" == "./" ]]; then
+            echo "path=." >> $GITHUB_OUTPUT
+          else
+            echo "path=$GHA_RELEASE_PATH" >> $GITHUB_OUTPUT
+          fi
+      # Run Release-Please
       - id: release
-        uses: googleapis/release-please-action@c2a5a2bd6a758a0937f1ddb1e8950609867ed15c # v4.3.0
+        uses: googleapis/release-please-action@a02a34c4d625f9be7cb89156071d8567266a2445 # v4.2.0
         with:
           release-type: ${{ inputs.release_type }}
-          path: ${{ inputs.path }}
-      - uses: actions/checkout@v5
-      - if: ${{ steps.release.outputs.release_created }}
-        id: tag-versions
+          path: ${{ steps.pre-release.outputs.path }}
+      # The output keys will differ based on the input path
+      # https://github.com/googleapis/release-please-action?tab=readme-ov-file#outputs
+      - id: post-release
+        shell: bash
+        env:
+          GHA_RELEASE_PATH: ${{ steps.pre-release.outputs.path }}
+        run: |
+          output_path_prefix=""
+          if [[ "$GHA_RELEASE_PATH" != "." ]]; then
+            output_path_prefix="$GHA_RELEASE_PATH--"
+          fi
+
+          echo "tag_name=${output_path_prefix}tag_name" >> $GITHUB_OUTPUT
+          echo "version=${output_path_prefix}version" >> $GITHUB_OUTPUT
+          echo "body=${output_path_prefix}body" >> $GITHUB_OUTPUT
+          echo "major=${output_path_prefix}major" >> $GITHUB_OUTPUT
+          echo "minor=${output_path_prefix}minor" >> $GITHUB_OUTPUT
+          echo "patch=${output_path_prefix}patch" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+      # Be explicit in the if check to handle bool confusion (Github Actions foolery)
+      - id: tag-versions
+        if: ${{ steps.release.outputs.releases_created && steps.release.outputs.releases_created != 'false' }}
+        shell: bash
+        env:
+          RELEASE_MAJOR: ${{ steps.release.outputs[steps.post-release.outputs.major] }}
+          RELEASE_MINOR: ${{ steps.release.outputs[steps.post-release.outputs.minor] }}
+          RELEASE_PATCH: ${{ steps.release.outputs[steps.post-release.outputs.patch] }}
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git tag -d v${{ steps.release.outputs.major }} || true
-          git tag -d v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
-          git push origin :v${{ steps.release.outputs.major }} || true
-          git push origin :v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} || true
-          git tag -a v${{ steps.release.outputs.major }} -m "chore(release): v${{ steps.release.outputs.major }}"
-          git tag -a v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }} -m "chore(release): v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}"
-          git push origin v${{ steps.release.outputs.major }}
-          git push origin v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}
+          git tag -d "v$RELEASE_MAJOR" || true
+          git tag -d "v$RELEASE_MAJOR.$RELEASE_MINOR" || true
+          git push origin ":v$RELEASE_MAJOR" || true
+          git push origin ":v$RELEASE_MAJOR.$RELEASE_MINOR" || true
+          git tag -a "v$RELEASE_MAJOR" -m "chore(release): v$RELEASE_MAJOR"
+          git tag -a "v$RELEASE_MAJOR.$RELEASE_MINOR" -m "chore(release): v$RELEASE_MAJOR.$RELEASE_MINOR"
+          git push origin "v$RELEASE_MAJOR"
+          git push origin "v$RELEASE_MAJOR.$RELEASE_MINOR"
