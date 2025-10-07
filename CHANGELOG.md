@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/entur/gha-meta/compare/v1.5.1...v1.6.0) (2025-10-07)
+
+
+### Features
+
+* Added more release outputs and fixed code logic ([#75](https://github.com/entur/gha-meta/issues/75)) ([cdfdde6](https://github.com/entur/gha-meta/commit/cdfdde635a75d0cd6620e2e9c7666662b03d03d1))
+
 ## [1.5.1](https://github.com/entur/gha-meta/compare/v1.5.0...v1.5.1) (2025-10-02)
 
 
