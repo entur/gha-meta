@@ -63,17 +63,11 @@ jobs:
           GHA_RELEASE_PATH: ${{ steps.pre-release.outputs.path }}
         run: |
           output_path_prefix=""
-          if [[ "$GHA_RELEASE_PATH" != "." ]]; then
-            output_path_prefix="$GHA_RELEASE_PATH--"
-          fi
-
-          echo "tag_name=${output_path_prefix}tag_name" >> $GITHUB_OUTPUT
-          echo "version=${output_path_prefix}version" >> $GITHUB_OUTPUT
-          echo "body=${output_path_prefix}body" >> $GITHUB_OUTPUT
-          echo "major=${output_path_prefix}major" >> $GITHUB_OUTPUT
-          echo "minor=${output_path_prefix}minor" >> $GITHUB_OUTPUT
-          echo "patch=${output_path_prefix}patch" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v4
+          [[ "$GHA_RELEASE_PATH" != "." ]] && output_path_prefix="$GHA_RELEASE_PATH--"
+          for key in tag_name version body major minor patch; do
+            echo "$key=${output_path_prefix}$key" >> "$GITHUB_OUTPUT"
+          done
+      - uses: actions/checkout@v5
       # Be explicit in the if check to handle bool confusion (Github Actions foolery)
       - id: tag-versions
         if: ${{ steps.release.outputs.releases_created && steps.release.outputs.releases_created != 'false' }}
