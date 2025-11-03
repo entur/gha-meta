@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       release_type:
-        description: "The type of release to create (simple, terraform-module, helm, maven, manifest, etc). If set to 'manifest', you can configure the workflow by setting config_file and manifest_file appropriately."
+        description: "The type of release to create (simple, terraform-module, helm, maven, manifest, etc). If set to 'manifest', you must provide **release-please-config.json** and **.release-please-manifest.json** in the repository."
         type: string
         required: false
         default: "simple"
@@ -17,12 +17,12 @@ on:
         type: string
         default: "main"
       config_file:
-        description: "Path to release-please-config.json. Must be used together with release_type=manifest for this to have any effect"
+        description: "Path to the release-please config in the repository. Defaults to **release-please-config.json**. Must be used together with release_type=manifest for this to have any effect"
         type: string
         required: false
         default: "release-please-config.json"
       manifest_file:
-        description: "Path to .release-please-manifest.json. Must be used together with release_type=manifest for this to have any effect"
+        description: "Path to the release-please versions manifest in the repository. Defaults to **.release-please-manifest.json**. Must be used together with release_type=manifest for this to have any effect"
         type: string
         required: false
         default: ".release-please-manifest.json"
