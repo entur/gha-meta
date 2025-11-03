@@ -14,8 +14,10 @@ on:
         required: false
         default: "."
       target_branch:
+        description: "The target branch to release against. Defaults to the repository's default branch."
         type: string
-        default: "main"
+        required: false
+        default: ""
       config_file:
         description: "Path to the release-please config in the repository. Defaults to **release-please-config.json**. Must be used together with release_type=manifest for this to have any effect"
         type: string
