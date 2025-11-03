@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/entur/gha-meta/compare/v1.6.0...v1.6.1) (2025-11-03)
+
+
+### Bug Fixes
+
+* Conditionally support release using "advanced workflow" ([#79](https://github.com/entur/gha-meta/issues/79)) ([e786802](https://github.com/entur/gha-meta/commit/e786802f9000fb28a23f8344031afc88bdbf3bc1))
+
 ## [1.6.0](https://github.com/entur/gha-meta/compare/v1.5.1...v1.6.0) (2025-10-07)
 
 
