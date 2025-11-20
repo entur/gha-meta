@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       release_type:
-        description: "The type of release to create (simple, terraform-module, helm, maven, manifest, etc). If set to 'manifest', you must provide **release-please-config.json** and **.release-please-manifest.json** in the repository."
+        description: "The type of release to create (simple, terraform-module, helm, maven, manifest, etc). If set to 'manifest', you must provide **release-please-config.json** and **.release-please-manifest.json** in the repository's default branch."
         type: string
         required: false
         default: "simple"
