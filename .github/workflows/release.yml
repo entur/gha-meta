@@ -158,10 +158,10 @@ jobs:
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git tag -d "v$RELEASE_MAJOR" || true
-          git tag -d "v$RELEASE_MAJOR.$RELEASE_MINOR" || true
-          git push origin ":v$RELEASE_MAJOR" || true
-          git push origin ":v$RELEASE_MAJOR.$RELEASE_MINOR" || true
+          git tag -d "v$RELEASE_MAJOR" 2>/dev/null || true
+          git tag -d "v$RELEASE_MAJOR.$RELEASE_MINOR" 2>/dev/null || true
+          git push origin ":v$RELEASE_MAJOR" 2>/dev/null || true
+          git push origin ":v$RELEASE_MAJOR.$RELEASE_MINOR" 2>/dev/null || true
           git tag -a "v$RELEASE_MAJOR" -m "chore(release): v$RELEASE_MAJOR"
           git tag -a "v$RELEASE_MAJOR.$RELEASE_MINOR" -m "chore(release): v$RELEASE_MAJOR.$RELEASE_MINOR"
           git push origin "v$RELEASE_MAJOR"
