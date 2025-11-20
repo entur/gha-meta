@@ -47,10 +47,10 @@ jobs:
       pull-requests: write
     timeout-minutes: 30
     outputs:
-      release_created: ${{ steps.release.outputs.releases_created }}
-      tag_name: ${{ steps.release.outputs[steps.post-release.outputs.tag_name] }}
-      version: ${{ steps.release.outputs[steps.post-release.outputs.version] }}
-      body: ${{ steps.release.outputs[steps.post-release.outputs.body] }}
+      release_created: ${{ steps.release-output.outputs.releases_created }}
+      tag_name: ${{ steps.release-output.outputs.tag_name }}
+      version: ${{ steps.release-output.outputs.version }}
+      body: ${{ steps.release-output.outputs.body }}
     steps:
       # Checkout the repository
       - name: Checkout repo
@@ -97,14 +97,64 @@ jobs:
           for key in tag_name version body major minor patch; do
             echo "$key=${output_path_prefix}$key" >> "$GITHUB_OUTPUT"
           done
-      # Be explicit in the if check to handle bool confusion (Github Actions foolery)
-      - id: tag-versions
-        if: ${{ steps.release.outputs.releases_created && steps.release.outputs.releases_created != 'false' }}
+
+      # Unify outputs from the two possible release steps
+      - id: release-output
         shell: bash
         env:
-          RELEASE_MAJOR: ${{ steps.release.outputs[steps.post-release.outputs.major] }}
-          RELEASE_MINOR: ${{ steps.release.outputs[steps.post-release.outputs.minor] }}
-          RELEASE_PATCH: ${{ steps.release.outputs[steps.post-release.outputs.patch] }}
+          # We use toJSON to safely handle potentially empty outputs if a step didn't run
+          OUTPUTS_RELEASE: ${{ toJSON(steps.release.outputs) }}
+          OUTPUTS_MANIFEST: ${{ toJSON(steps.release-with-manifest-config.outputs) }}
+          KEY_TAG_NAME: ${{ steps.post-release.outputs.tag_name }}
+          KEY_VERSION: ${{ steps.post-release.outputs.version }}
+          KEY_BODY: ${{ steps.post-release.outputs.body }}
+          KEY_MAJOR: ${{ steps.post-release.outputs.major }}
+          KEY_MINOR: ${{ steps.post-release.outputs.minor }}
+          KEY_PATCH: ${{ steps.post-release.outputs.patch }}
+        run: |
+          # Determine which outputs to use
+          if [[ "${{ inputs.release_type }}" == "manifest" ]]; then
+            echo "Using manifest outputs"
+            echo "releases_created=$(echo "$OUTPUTS_MANIFEST" | jq -r .releases_created)" >> "$GITHUB_OUTPUT"
+            echo "tag_name=$(echo "$OUTPUTS_MANIFEST" | jq -r ".\"$KEY_TAG_NAME\"")" >> "$GITHUB_OUTPUT"
+            echo "version=$(echo "$OUTPUTS_MANIFEST" | jq -r ".\"$KEY_VERSION\"")" >> "$GITHUB_OUTPUT"
+            echo "body<<EOF" >> "$GITHUB_OUTPUT"
+            # output body can be very large, limit to 1MB to avoid GitHub Actions limits
+            echo "$OUTPUTS_MANIFEST" | jq -r ".\"$KEY_BODY\"" | head -c 1024000 >> "$GITHUB_OUTPUT"
+            # Ensure newline before EOF in case head -c truncated the output
+            echo "" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+
+            # For tagging step
+            echo "major=$(echo "$OUTPUTS_MANIFEST" | jq -r ".\"$KEY_MAJOR\"")" >> "$GITHUB_OUTPUT"
+            echo "minor=$(echo "$OUTPUTS_MANIFEST" | jq -r ".\"$KEY_MINOR\"")" >> "$GITHUB_OUTPUT"
+            echo "patch=$(echo "$OUTPUTS_MANIFEST" | jq -r ".\"$KEY_PATCH\"")" >> "$GITHUB_OUTPUT"
+          else
+            echo "Using standard outputs"
+            echo "releases_created=$(echo "$OUTPUTS_RELEASE" | jq -r .releases_created)" >> "$GITHUB_OUTPUT"
+            echo "tag_name=$(echo "$OUTPUTS_RELEASE" | jq -r ".\"$KEY_TAG_NAME\"")" >> "$GITHUB_OUTPUT"
+            echo "version=$(echo "$OUTPUTS_RELEASE" | jq -r ".\"$KEY_VERSION\"")" >> "$GITHUB_OUTPUT"
+            echo "body<<EOF" >> "$GITHUB_OUTPUT"
+            # output body can be very large, limit to 1MB to avoid GitHub Actions limits
+            echo "$OUTPUTS_RELEASE" | jq -r ".\"$KEY_BODY\"" | head -c 1024000 >> "$GITHUB_OUTPUT"
+            # Ensure newline before EOF in case head -c truncated the output
+            echo "" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+
+            # For tagging step
+            echo "major=$(echo "$OUTPUTS_RELEASE" | jq -r ".\"$KEY_MAJOR\"")" >> "$GITHUB_OUTPUT"
+            echo "minor=$(echo "$OUTPUTS_RELEASE" | jq -r ".\"$KEY_MINOR\"")" >> "$GITHUB_OUTPUT"
+            echo "patch=$(echo "$OUTPUTS_RELEASE" | jq -r ".\"$KEY_PATCH\"")" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Be explicit in the if check to handle bool confusion (Github Actions foolery)
+      - id: tag-versions
+        if: ${{ steps.release-output.outputs.releases_created && steps.release-output.outputs.releases_created != 'false' }}
+        shell: bash
+        env:
+          RELEASE_MAJOR: ${{ steps.release-output.outputs.major }}
+          RELEASE_MINOR: ${{ steps.release-output.outputs.minor }}
+          RELEASE_PATCH: ${{ steps.release-output.outputs.patch }}
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
