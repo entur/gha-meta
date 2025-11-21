@@ -99,6 +99,8 @@ jobs:
             echo "::group::OUTPUTS"
             echo "$OUTPUTS_WITH_MANIFEST"
             echo "::endgroup::"
+            # set releases_created
+            releases_created=$(echo "$OUTPUTS_WITH_MANIFEST" | jq -r .releases_created)
             paths_released=$(echo "$OUTPUTS_WITH_MANIFEST" | jq -r .paths_released)
             if [[ "$paths_released" != "null" && "$paths_released" != "[]" ]]; then
               first_path=$(echo "$paths_released" | jq -r ".[0]")
@@ -111,6 +113,7 @@ jobs:
             echo "::group::OUTPUTS"
             echo "$OUTPUTS_WITHOUT_MANIFEST"
             echo "::endgroup::"
+            releases_created=$(echo "$OUTPUTS_WITHOUT_MANIFEST" | jq -r .releases_created)
           fi
           output_path_prefix=""
           [[ "$GHA_RELEASE_PATH" != "." ]] && output_path_prefix="$GHA_RELEASE_PATH--"
