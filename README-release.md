@@ -35,11 +35,12 @@ jobs:
 
 <!-- AUTO-DOC-OUTPUT:START - Do not remove or modify this section -->
 
-|                                     OUTPUT                                      |                         VALUE                          | DESCRIPTION |
-|---------------------------------------------------------------------------------|--------------------------------------------------------|-------------|
-|                 <a name="output_body"></a>[body](#output_body)                  |      `"${{ jobs.release-please.outputs.body }}"`       |             |
-| <a name="output_release_created"></a>[release_created](#output_release_created) | `"${{ jobs.release-please.outputs.release_created }}"` |             |
-|           <a name="output_tag_name"></a>[tag_name](#output_tag_name)            |    `"${{ jobs.release-please.outputs.tag_name }}"`     |             |
-|             <a name="output_version"></a>[version](#output_version)             |     `"${{ jobs.release-please.outputs.version }}"`     |             |
+|                                       OUTPUT                                       |                          VALUE                          | DESCRIPTION |
+|------------------------------------------------------------------------------------|---------------------------------------------------------|-------------|
+|                   <a name="output_body"></a>[body](#output_body)                   |       `"${{ jobs.release-please.outputs.body }}"`       |             |
+|  <a name="output_release_created"></a>[release_created](#output_release_created)   | `"${{ jobs.release-please.outputs.releases_created }}"` |             |
+| <a name="output_releases_created"></a>[releases_created](#output_releases_created) | `"${{ jobs.release-please.outputs.releases_created }}"` |             |
+|             <a name="output_tag_name"></a>[tag_name](#output_tag_name)             |     `"${{ jobs.release-please.outputs.tag_name }}"`     |             |
+|              <a name="output_version"></a>[version](#output_version)               |     `"${{ jobs.release-please.outputs.version }}"`      |             |
 
 <!-- AUTO-DOC-OUTPUT:END -->
