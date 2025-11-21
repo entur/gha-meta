@@ -112,6 +112,13 @@ jobs:
           KEY_MINOR: ${{ steps.post-release.outputs.minor }}
           KEY_PATCH: ${{ steps.post-release.outputs.patch }}
         run: |
+          # Debug print of outputs
+          echo "::group::OUTPUTS_RELEASE"
+          echo "$OUTPUTS_RELEASE"
+          echo "::endgroup::"
+          echo "::group::OUTPUTS_MANIFEST"
+          echo "$OUTPUTS_MANIFEST"
+          echo "::endgroup::"
           # Determine which outputs to use
           if [[ "${{ inputs.release_type }}" == "manifest" ]]; then
             echo "Using manifest outputs"
