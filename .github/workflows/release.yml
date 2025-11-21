@@ -29,8 +29,12 @@ on:
         required: false
         default: ".release-please-manifest.json"
     outputs:
+      # for backward compatibility
       release_created:
-        value: ${{ jobs.release-please.outputs.release_created }}
+        value: ${{ jobs.release-please.outputs.releases_created }}
+      # standardized output
+      releases_created:
+        value: ${{ jobs.release-please.outputs.releases_created }}
       tag_name:
         value: ${{ jobs.release-please.outputs.tag_name }}
       version:
@@ -47,7 +51,7 @@ jobs:
       pull-requests: write
     timeout-minutes: 30
     outputs:
-      release_created: ${{ steps.release-output.outputs.releases_created }}
+      releases_created: ${{ steps.release-output.outputs.releases_created }}
       tag_name: ${{ steps.release-output.outputs.tag_name }}
       version: ${{ steps.release-output.outputs.version }}
       body: ${{ steps.release-output.outputs.body }}
@@ -101,6 +105,7 @@ jobs:
             echo "::endgroup::"
             # set releases_created
             releases_created=$(echo "$OUTPUTS_WITH_MANIFEST" | jq -r .releases_created)
+            echo "releases_created=${releases_created:-false}" >> "$GITHUB_OUTPUT"
             paths_released=$(echo "$OUTPUTS_WITH_MANIFEST" | jq -r .paths_released)
             if [[ "$paths_released" != "null" && "$paths_released" != "[]" ]]; then
               first_path=$(echo "$paths_released" | jq -r ".[0]")
@@ -114,6 +119,7 @@ jobs:
             echo "$OUTPUTS_WITHOUT_MANIFEST"
             echo "::endgroup::"
             releases_created=$(echo "$OUTPUTS_WITHOUT_MANIFEST" | jq -r .releases_created)
+            echo "releases_created=${releases_created:-false}" >> "$GITHUB_OUTPUT"
           fi
           output_path_prefix=""
           [[ "$GHA_RELEASE_PATH" != "." ]] && output_path_prefix="$GHA_RELEASE_PATH--"
