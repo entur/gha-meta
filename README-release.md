@@ -4,6 +4,15 @@ Use release-please to create releases based on [conventional commit](https://www
 
 This workflow will also push git tags for the major and minor versions, this enables you to pin at the wanted level `@v2`, `@v2.1`, or the fully specified `@v2.1.3`.
 
+## Release flow
+
+This reusable workflow automates GitHub Releases using a two-step process:
+
+1. **Create Release PR**: A push to the default branch triggers the workflow, creating a release pull request with release details and an updated `CHANGELOG.md`.
+2. **Publish Release**: Merging the release PR triggers the workflow again to create the actual GitHub Release.
+
+You can keep the release PR open and merge other pull requests; the release PR will automatically update to include these additional changes in the same release.
+
 ## Example
 
 ```yaml
@@ -11,23 +20,27 @@ name: create release
 on:
   push:
     branches:
-      - main
+      - $default-branch
 jobs:
   release:
     uses: entur/gha-meta/.github/workflows/release.yml@v1
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
 ```
 
 ## Inputs
 
 <!-- AUTO-DOC-INPUT:START - Do not remove or modify this section -->
 
-|                                  INPUT                                  |  TYPE  | REQUIRED |              DEFAULT              |                                                                                                            DESCRIPTION                                                                                                            |
-|-------------------------------------------------------------------------|--------|----------|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|    <a name="input_config_file"></a>[config_file](#input_config_file)    | string |  false   |  `"release-please-config.json"`   |                  Path to the release-please config <br>in the repository. Defaults to <br>**release-please-config.json**. Must be used together <br>with release_type=manifest for this to <br>have any effect                    |
-| <a name="input_manifest_file"></a>[manifest_file](#input_manifest_file) | string |  false   | `".release-please-manifest.json"` |           Path to the release-please versions <br>manifest in the repository. Defaults <br>to **.release-please-manifest.json**. Must be used <br>together with release_type=manifest for this <br>to have any effect             |
-|              <a name="input_path"></a>[path](#input_path)               | string |  false   |               `"."`               |                                                                      Path to the release code <br>in the repository (where the CHANGELOG.md will be placed)                                                                       |
-|  <a name="input_release_type"></a>[release_type](#input_release_type)   | string |  false   |            `"simple"`             | The type of release to <br>create (simple, terraform-module, helm, maven, manifest, etc). If set to <br>'manifest', you must provide **release-please-config.json** <br>and **.release-please-manifest.json** in the repository.  |
-| <a name="input_target_branch"></a>[target_branch](#input_target_branch) | string |  false   |                                   |                                                                    The target branch to release <br>against. Defaults to the repository's <br>default branch.                                                                     |
+|                                  INPUT                                  |  TYPE  | REQUIRED |              DEFAULT              |                                                                                                                      DESCRIPTION                                                                                                                       |
+|-------------------------------------------------------------------------|--------|----------|-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|    <a name="input_config_file"></a>[config_file](#input_config_file)    | string |  false   |  `"release-please-config.json"`   |                             Path to the release-please config <br>in the repository. Defaults to <br>**release-please-config.json**. Must be used together <br>with release_type=manifest for this to <br>have any effect                              |
+| <a name="input_manifest_file"></a>[manifest_file](#input_manifest_file) | string |  false   | `".release-please-manifest.json"` |                      Path to the release-please versions <br>manifest in the repository. Defaults <br>to **.release-please-manifest.json**. Must be used <br>together with release_type=manifest for this <br>to have any effect                       |
+|              <a name="input_path"></a>[path](#input_path)               | string |  false   |               `"."`               |                                                                                Path to the release code <br>in the repository (where the CHANGELOG.md will be placed)                                                                                  |
+|  <a name="input_release_type"></a>[release_type](#input_release_type)   | string |  false   |            `"simple"`             | The type of release to <br>create (simple, terraform-module, helm, maven, manifest, etc). If set to <br>'manifest', you must provide **release-please-config.json** <br>and **.release-please-manifest.json** in the repository's <br>default branch.  |
+| <a name="input_target_branch"></a>[target_branch](#input_target_branch) | string |  false   |                                   |                                                                              The target branch to release <br>against. Defaults to the repository's <br>default branch.                                                                                |
 
 <!-- AUTO-DOC-INPUT:END -->
 
@@ -35,11 +48,12 @@ jobs:
 
 <!-- AUTO-DOC-OUTPUT:START - Do not remove or modify this section -->
 
-|                                     OUTPUT                                      |                         VALUE                          | DESCRIPTION |
-|---------------------------------------------------------------------------------|--------------------------------------------------------|-------------|
-|                 <a name="output_body"></a>[body](#output_body)                  |      `"${{ jobs.release-please.outputs.body }}"`       |             |
-| <a name="output_release_created"></a>[release_created](#output_release_created) | `"${{ jobs.release-please.outputs.release_created }}"` |             |
-|           <a name="output_tag_name"></a>[tag_name](#output_tag_name)            |    `"${{ jobs.release-please.outputs.tag_name }}"`     |             |
-|             <a name="output_version"></a>[version](#output_version)             |     `"${{ jobs.release-please.outputs.version }}"`     |             |
+|                                       OUTPUT                                       |                          VALUE                          | DESCRIPTION |
+|------------------------------------------------------------------------------------|---------------------------------------------------------|-------------|
+|                   <a name="output_body"></a>[body](#output_body)                   |       `"${{ jobs.release-please.outputs.body }}"`       |             |
+|  <a name="output_release_created"></a>[release_created](#output_release_created)   | `"${{ jobs.release-please.outputs.releases_created }}"` |             |
+| <a name="output_releases_created"></a>[releases_created](#output_releases_created) | `"${{ jobs.release-please.outputs.releases_created }}"` |             |
+|             <a name="output_tag_name"></a>[tag_name](#output_tag_name)             |     `"${{ jobs.release-please.outputs.tag_name }}"`     |             |
+|              <a name="output_version"></a>[version](#output_version)               |     `"${{ jobs.release-please.outputs.version }}"`      |             |
 
 <!-- AUTO-DOC-OUTPUT:END -->
