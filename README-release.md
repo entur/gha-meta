@@ -4,6 +4,15 @@ Use release-please to create releases based on [conventional commit](https://www
 
 This workflow will also push git tags for the major and minor versions, this enables you to pin at the wanted level `@v2`, `@v2.1`, or the fully specified `@v2.1.3`.
 
+## Release flow
+
+This reusable workflow automates GitHub Releases using a two-step process:
+
+1. **Create Release PR**: A push to the default branch triggers the workflow, creating a release pull request with release details and an updated `CHANGELOG.md`.
+2. **Publish Release**: Merging the release PR triggers the workflow again to create the actual GitHub Release.
+
+You can keep the release PR open and merge other pull requests; the release PR will automatically update to include these additional changes in the same release.
+
 ## Example
 
 ```yaml
@@ -11,10 +20,14 @@ name: create release
 on:
   push:
     branches:
-      - main
+      - $default-branch
 jobs:
   release:
     uses: entur/gha-meta/.github/workflows/release.yml@v1
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
 ```
 
 ## Inputs
