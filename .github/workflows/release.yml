@@ -96,8 +96,8 @@ jobs:
           for key in tag_name version body major minor patch; do
             echo "$key=${output_path_prefix}$key" >> "$GITHUB_OUTPUT"
           done
-          if [[ "${{ inputs.release_type }}" == "manifest" ]]; then
-            # Get the different package paths released from the manifest outputs
+          #if [[ "${{ inputs.release_type }}" == "manifest" ]]; then
+          #  # Get the different package paths released from the manifest outputs
 
       # Unify outputs from the two possible release steps
       - id: release-output
