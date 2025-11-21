@@ -105,6 +105,7 @@ jobs:
           # We use toJSON to safely handle potentially empty outputs if a step didn't run
           OUTPUTS_RELEASE: ${{ toJSON(steps.release.outputs) }}
           OUTPUTS_MANIFEST: ${{ toJSON(steps.release-with-manifest-config.outputs) }}
+          OUTPUTS_POST_RELEASE: ${{ toJSON(steps.post-release.outputs) }}
           KEY_TAG_NAME: ${{ steps.post-release.outputs.tag_name }}
           KEY_VERSION: ${{ steps.post-release.outputs.version }}
           KEY_BODY: ${{ steps.post-release.outputs.body }}
@@ -119,6 +120,10 @@ jobs:
           echo "::group::OUTPUTS_MANIFEST"
           echo "$OUTPUTS_MANIFEST"
           echo "::endgroup::"
+          echo "::group::OUTPUTS_POST_RELEASE"
+          echo "$OUTPUTS_POST_RELEASE"
+          echo "::endgroup::"
+
           # Determine which outputs to use
           if [[ "${{ inputs.release_type }}" == "manifest" ]]; then
             echo "Using manifest outputs"
