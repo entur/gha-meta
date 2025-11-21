@@ -51,10 +51,12 @@ jobs:
       tag_name: ${{ steps.release-output.outputs.tag_name }}
       version: ${{ steps.release-output.outputs.version }}
       body: ${{ steps.release-output.outputs.body }}
+      all_paths_released: ${{ steps.release-output.outputs.paths_released }}
+      all_releases: ${{ steps.release-output.outputs.all_releases }}
     steps:
       # Checkout the repository
       - name: Checkout repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
       # Release-Please is set up to handle explicitly '.' instead of './', so we correct the path
       # https://github.com/googleapis/release-please-action/blob/main/src/index.ts#L179
       - id: pre-release
@@ -96,8 +98,6 @@ jobs:
           for key in tag_name version body major minor patch; do
             echo "$key=${output_path_prefix}$key" >> "$GITHUB_OUTPUT"
           done
-          #if [[ "${{ inputs.release_type }}" == "manifest" ]]; then
-          #  # Get the different package paths released from the manifest outputs
 
       # Unify outputs from the two possible release steps
       - id: release-output
@@ -113,6 +113,7 @@ jobs:
           KEY_MAJOR: ${{ steps.post-release.outputs.major }}
           KEY_MINOR: ${{ steps.post-release.outputs.minor }}
           KEY_PATCH: ${{ steps.post-release.outputs.patch }}
+          RELEASE_TYPE: ${{ inputs.release_type }}
         run: |
           # Debug print of outputs
           echo "::group::OUTPUTS_RELEASE"
@@ -126,7 +127,7 @@ jobs:
           echo "::endgroup::"
 
           # Determine which outputs to use
-          if [[ "${{ inputs.release_type }}" == "manifest" ]]; then
+          if [[ "$RELEASE_TYPE" == "manifest" ]]; then
             echo "Using manifest outputs"
             releases_created=$(echo "$OUTPUTS_MANIFEST" | jq -r .releases_created)
             echo "releases_created=$releases_created" >> "$GITHUB_OUTPUT"
@@ -147,14 +148,14 @@ jobs:
             if [[ "$releases_created" == "true" && ( "$current_tag_name" == "null" || -z "$current_tag_name" ) ]]; then
                paths_released=$(echo "$OUTPUTS_MANIFEST" | jq -r .paths_released)
                if [[ "$paths_released" != "null" && "$paths_released" != "[]" ]]; then
-               first_path=$(echo "$paths_released" | jq -r ".[0]")
-               echo "Detected release for path: $first_path. Switching output keys."
-               lookup_key_tag_name="${first_path}--tag_name"
-               lookup_key_version="${first_path}--version"
-               lookup_key_body="${first_path}--body"
-               lookup_key_major="${first_path}--major"
-               lookup_key_minor="${first_path}--minor"
-               lookup_key_patch="${first_path}--patch"
+                first_path=$(echo "$paths_released" | jq -r ".[0]")
+                echo "Detected release for path: $first_path. Switching output keys."
+                lookup_key_tag_name="${first_path}--tag_name"
+                lookup_key_version="${first_path}--version"
+                lookup_key_body="${first_path}--body"
+                lookup_key_major="${first_path}--major"
+                lookup_key_minor="${first_path}--minor"
+                lookup_key_patch="${first_path}--patch"
                fi
             fi
 
@@ -171,6 +172,42 @@ jobs:
             echo "major=$(echo "$OUTPUTS_MANIFEST" | jq -r ".\"$lookup_key_major\"")" >> "$GITHUB_OUTPUT"
             echo "minor=$(echo "$OUTPUTS_MANIFEST" | jq -r ".\"$lookup_key_minor\"")" >> "$GITHUB_OUTPUT"
             echo "patch=$(echo "$OUTPUTS_MANIFEST" | jq -r ".\"$lookup_key_patch\"")" >> "$GITHUB_OUTPUT"
+
+            # foreach all paths_released add outputs for each released path
+            paths_released=$(echo "$OUTPUTS_MANIFEST" | jq -c .paths_released)
+            if [[ "$paths_released" == "null" ]]; then paths_released="[]"; fi
+            echo "paths_released=$paths_released" >> "$GITHUB_OUTPUT"
+
+            # Generate all_releases JSON array
+            all_releases=$(echo "$OUTPUTS_MANIFEST" | jq -c '
+               . as $parent |
+               (.paths_released // []) | map(
+                 . as $p |
+                 {
+                 path: $p,
+                 tag_name: $parent["\($p)--tag_name"],
+                 version: $parent["\($p)--version"],
+                 body: $parent["\($p)--body"]
+                 }
+               )
+               ')
+            echo "all_releases=$all_releases" >> "$GITHUB_OUTPUT"
+
+            if [[ "$paths_released" != "[]" ]]; then
+              for path in $(echo "$paths_released" | jq -r '.[]'); do
+              path_tag_name="${path}--tag_name"
+              path_version="${path}--version"
+              path_body="${path}--body"
+              echo "${path_tag_name}=$(echo "$OUTPUTS_MANIFEST" | jq -r ".\"$path_tag_name\"")" >> "$GITHUB_OUTPUT"
+              echo "${path_version}=$(echo "$OUTPUTS_MANIFEST" | jq -r ".\"$path_version\"")" >> "$GITHUB_OUTPUT"
+              echo "${path_body}<<EOF" >> "$GITHUB_OUTPUT"
+              # output body can be very large, limit to 1MB to avoid GitHub Actions limits
+              echo "$OUTPUTS_MANIFEST" | jq -r ".\"$path_body\"" | head -c 1024000 >> "$GITHUB_OUTPUT"
+              # Ensure newline before EOF in case head -c truncated the output
+              echo "" >> "$GITHUB_OUTPUT"
+              echo "EOF" >> "$GITHUB_OUTPUT"
+              done
+            fi
           else
             echo "Using standard outputs"
             echo "releases_created=$(echo "$OUTPUTS_RELEASE" | jq -r .releases_created)" >> "$GITHUB_OUTPUT"
