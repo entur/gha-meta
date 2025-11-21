@@ -88,7 +88,7 @@ jobs:
           config-file: ${{ inputs.config_file }}
           manifest-file: ${{ inputs.manifest_file }}
 
-      # The output keys will differ based on the input path
+      # The output keys will differ based on the input path or manifest component released
       # If release type is 'manifest', support getting the release version of the first path released in the manifest (not multiple)
       # https://github.com/googleapis/release-please-action?tab=readme-ov-file#outputs
       - id: release-output
@@ -99,32 +99,49 @@ jobs:
           OUTPUTS_WITH_MANIFEST: ${{ toJSON(steps.release-with-manifest-config.outputs) }}
           OUTPUTS_WITHOUT_MANIFEST: ${{ toJSON(steps.release.outputs) }}
         run: |
+          # Determine which outputs to process based on release type
           if [[ "$RELEASE_TYPE" == "manifest" ]]; then
-            echo "::group::OUTPUTS"
-            echo "$OUTPUTS_WITH_MANIFEST"
-            echo "::endgroup::"
-            # set releases_created
-            releases_created=$(echo "$OUTPUTS_WITH_MANIFEST" | jq -r .releases_created)
-            echo "releases_created=${releases_created:-false}" >> "$GITHUB_OUTPUT"
-            paths_released=$(echo "$OUTPUTS_WITH_MANIFEST" | jq -r .paths_released)
-            if [[ "$paths_released" != "null" && "$paths_released" != "[]" ]]; then
-              first_path=$(echo "$paths_released" | jq -r ".[0]")
-              # set $GHA_RELEASE_PATH to first released path
-              GHA_RELEASE_PATH="$first_path"
-            else
-              echo "No releases were created yet"
-            fi
+          outputs_json="$OUTPUTS_WITH_MANIFEST"
           else
-            echo "::group::OUTPUTS"
-            echo "$OUTPUTS_WITHOUT_MANIFEST"
-            echo "::endgroup::"
-            releases_created=$(echo "$OUTPUTS_WITHOUT_MANIFEST" | jq -r .releases_created)
-            echo "releases_created=${releases_created:-false}" >> "$GITHUB_OUTPUT"
+          outputs_json="$OUTPUTS_WITHOUT_MANIFEST"
           fi
-          output_path_prefix=""
-          [[ "$GHA_RELEASE_PATH" != "." ]] && output_path_prefix="$GHA_RELEASE_PATH--"
+
+          echo "::group::Release Outputs"
+          echo "$outputs_json"
+          echo "::endgroup::"
+
+          # Extract global release status
+          releases_created=$(echo "$outputs_json" | jq -r .releases_created)
+          echo "releases_created=${releases_created:-false}" >> "$GITHUB_OUTPUT"
+
+          # Determine the path prefix for output keys
+          # Default to the input path (normalized to '.' in pre-release step)
+          target_path="$GHA_RELEASE_PATH"
+
+          # For manifest releases, if a release occurred, use the first released path to find specific outputs
+          if [[ "$RELEASE_TYPE" == "manifest" ]]; then
+            paths_released=$(echo "$outputs_json" | jq -r '.paths_released // []')
+            if [[ "$paths_released" != "[]" ]]; then
+              target_path=$(echo "$paths_released" | jq -r '.[0]')
+            fi
+          fi
+
+          # Construct the key prefix (e.g., "path/to/pkg--")
+          prefix=""
+          if [[ "$target_path" != "." && -n "$target_path" ]]; then
+            prefix="${target_path}--"
+          fi
+
+          # Extract specific release details
           for key in tag_name version body major minor patch; do
-            echo "$key=${output_path_prefix}$key" >> "$GITHUB_OUTPUT"
+            lookup_key="${prefix}${key}"
+            value=$(echo "$outputs_json" | jq -r --arg k "$lookup_key" '.[$k]')
+            if [[ "$value" == "null" ]]; then value=""; fi
+            {
+              echo "$key<<EOF"
+              echo "$value"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
           done
 
       # Be explicit in the if check to handle bool confusion (Github Actions foolery)
