@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/entur/gha-meta/compare/v1.6.1...v1.6.2) (2025-11-27)
+
+
+### Bug Fixes
+
+* fixes output on release_type: manifest ([#81](https://github.com/entur/gha-meta/issues/81)) ([fa1d90a](https://github.com/entur/gha-meta/commit/fa1d90ada108eb32e868f8c590184f34f1c4491a))
+
 ## [1.6.1](https://github.com/entur/gha-meta/compare/v1.6.0...v1.6.1) (2025-11-03)
 
 
