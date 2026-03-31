@@ -3,6 +3,13 @@ name: Entur/Meta/Doc
 on:
   workflow_call:
     inputs:
+      branch:
+        description: Name of branch to push commit to
+        type: string
+      commit_default_author:
+        type: string
+        description: "How to select author of the commit. Options: github_actor, user_info, github_actions"
+        default: "github_actor"
       workflow_file:
         description: Path to the workflow file
         type: string
@@ -22,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
       - uses: tj-actions/auto-doc@b10ceedffd794ec29a8fa8700529f40c1b64a951 # v3.6.0
         with:
           filename: ${{ inputs.workflow_file }}
@@ -43,6 +50,7 @@ jobs:
       - uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9.1.4
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         with:
+          default_author: ${{ inputs.commit_default_author }}
           message: "docs: Update workflow documentation"
           add: ${{ inputs.readme_file }}
           pull: "--ff-only"
