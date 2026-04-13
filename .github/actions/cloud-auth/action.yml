@@ -65,7 +65,7 @@ runs:
     - id: login-azure
       name: Authenticate with Azure
       if: inputs.cloud_provider == 'az'
-      uses: Azure/login@v2
+      uses: Azure/login@v3
       with:
         client-id: ${{ inputs.azure_client_id }}
         tenant-id: ${{ inputs.azure_tenant_id }}
