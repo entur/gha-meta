@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.3](https://github.com/entur/gha-meta/compare/v1.6.2...v1.6.3) (2026-04-13)
+
+
+### Bug Fixes
+
+* **deps:** bump actions ([#91](https://github.com/entur/gha-meta/issues/91)) ([aae73bf](https://github.com/entur/gha-meta/commit/aae73bf91c824f94e910d1404a46c6c2528c8598))
+
 ## [1.6.2](https://github.com/entur/gha-meta/compare/v1.6.1...v1.6.2) (2025-11-27)
 
 
