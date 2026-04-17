@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/entur/gha-meta/compare/v1.6.3...v1.7.0) (2026-04-17)
+
+
+### Features
+
+* Add input parameters to choose branch and author ([#95](https://github.com/entur/gha-meta/issues/95)) ([f6cd78e](https://github.com/entur/gha-meta/commit/f6cd78e8cc4750e1d6910be507fc3cc86471df6c))
+
 ## [1.6.3](https://github.com/entur/gha-meta/compare/v1.6.2...v1.6.3) (2026-04-13)
 
 
