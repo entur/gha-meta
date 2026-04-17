@@ -12,3 +12,17 @@ updates:
       time: "09:00"
       timezone: "Europe/Oslo"
       day: "monday"
+  - package-ecosystem: github-actions
+    directory: "/.github/actions/cloud-auth"
+    schedule:
+      interval: "weekly"
+      time: "09:00"
+      timezone: "Europe/Oslo"
+      day: "monday"
+  - package-ecosystem: github-actions
+    directory: "/.github/actions/docker-auth"
+    schedule:
+      interval: "weekly"
+      time: "09:00"
+      timezone: "Europe/Oslo"
+      day: "monday"
