@@ -25,7 +25,6 @@ runs:
         GHA_REPOSITORY: ${{ inputs.gha_repository }}
       shell: bash
       run: |
-        set +e
         set -o pipefail
 
         # Resolve version by finding this reusable workflow's entry in the caller's run.
@@ -36,7 +35,7 @@ runs:
           "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" || echo "{}")
 
         GHA_SHA=$(echo "$RUN_DATA" | jq -r --arg repo "$GHA_REPOSITORY" \
-    '(.referenced_workflows // [])[] | select(.path | startswith($repo)) | .sha' | head -1)
+        '(.referenced_workflows // [])[] | select(.path | startswith($repo)) | .sha' | head -1)
         GHA_REF=$(echo "$RUN_DATA" | jq -r '(.referenced_workflows // [])[] | select(.path | startswith($GHA_REPOSITORY)) | .ref // ""' | head -1)
 
         WORKFLOW_VERSION=""
@@ -57,33 +56,33 @@ runs:
         WORKFLOW_INPUTS:   ${{ inputs.workflow_inputs }}
         WORKFLOW_NAME:     ${{ inputs.workflow_name }}
         WORKFLOW_VERSION:  ${{ steps.workflow_version.outputs.workflow_version }}
-      set +e                                                                                                             
-          set -o pipefail                                                                                                    
-   
-          # Strip inputs whose key names suggest sensitive content                                                           
-          SAFE_INPUTS=$(echo "$WORKFLOW_INPUTS" | jq -c '                                                                  
-            with_entries(                                                                                                    
-              select(                                                                                                      
+      run: |
+        set -o pipefail
+
+          # Strip inputs whose key names suggest sensitive content
+          SAFE_INPUTS=$(echo "$WORKFLOW_INPUTS" | jq -c '
+            with_entries(
+              select(
                 (.key | test("token|secret|key|password|credential|auth"; "i")) | not
               )                                                                                                              
             )
           ')                                                                                                                 
                                                                                                                            
-          properties=$(jq -n \                                                                                               
+          properties=$(jq -n \
             --arg     event    "$GITHUB_EVENT_NAME" \
-            --argjson inputs   "$SAFE_INPUTS" \                                                                              
-            --arg     name     "$WORKFLOW_NAME" \                                                                            
+            --argjson inputs   "$SAFE_INPUTS" \
+            --arg     name     "$WORKFLOW_NAME" \
             --arg     repo     "$GHA_REPOSITORY" \
-            --arg     run_id   "$GITHUB_RUN_ID" \                                                                            
-            --arg     version  "$WORKFLOW_VERSION" \                                                                       
-            '{                                                                                                               
-                event_name:       $event,                                                                                  
-                gha_repository:   $repo,                                                                                     
+            --arg     run_id   "$GITHUB_RUN_ID" \
+            --arg     version  "$WORKFLOW_VERSION" \
+            '{
+                event_name:       $event,
+                gha_repository:   $repo,
                 run_id:           $run_id,
-                workflow_name:    $name,                                                                                     
-                workflow_version: $version                                                                                   
+                workflow_name:    $name,
+                workflow_version: $version
               }
-                + ($inputs | with_entries(.key = ("input_" + .key)))'                                                        
+                + ($inputs | with_entries(.key = ("input_" + .key)))'
           )                                                                                                                  
           echo "properties=$(echo "$properties" | jq -c .)" >> "$GITHUB_OUTPUT"
     - name: Send event to PostHog
