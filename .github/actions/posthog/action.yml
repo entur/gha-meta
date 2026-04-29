@@ -13,20 +13,15 @@ inputs:
     required: false
     default: "{}"
   workflow_name:
-    description: "Name of the workflow. Used as the event name: {workflow_name}_executed"
+    description: "Name of the workflow. Used as the event name in PostHog."
     required: true
 
 runs:
   using: composite
   steps:
-    - name: Send event
+    - name: Resolve action version
+      id: workflow_version
       shell: bash
-      env:
-        POSTHOG_API_KEY:   ${{ inputs.api_key }}
-        WORKFLOW_INPUTS:   ${{ inputs.workflow_inputs }}
-        WORKFLOW_NAME:     ${{ inputs.workflow_name }}
-        GITHUB_TOKEN:      ${{ github.token }}
-        GITHUB_REPOSITORY: ${{ inputs.github_repository }}
       run: |
         set +e
         set +o pipefail
@@ -49,6 +44,19 @@ runs:
         fi
 
         echo "Workflow version: $WORKFLOW_VERSION"
+        echo "workflow_version=${WORKFLOW_VERSION}" >> "$GITHUB_OUTPUT"
+    - name: Send event
+      shell: bash
+      env:
+        POSTHOG_API_KEY:   ${{ inputs.api_key }}
+        WORKFLOW_INPUTS:   ${{ inputs.workflow_inputs }}
+        WORKFLOW_NAME:     ${{ inputs.workflow_name }}
+        WORKFLOW_VERSION:  ${{ steps.workflow_version.outputs.workflow_version }}
+        GITHUB_TOKEN:      ${{ github.token }}
+        GITHUB_REPOSITORY: ${{ inputs.github_repository }}
+      run: |
+        set +e
+        set +o pipefail
 
         payload=$(jq -n \
           --arg     api_key  "$POSTHOG_API_KEY" \
@@ -60,7 +68,7 @@ runs:
           --arg     run_id   "$GITHUB_RUN_ID" \
           '{
             api_key:     $api_key,
-            event:       ($name + "_executed"),
+            event:       $name,
             distinct_id: $repo,
             properties: (
               {
