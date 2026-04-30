@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/entur/gha-meta/compare/v1.8.0...v1.8.1) (2026-04-30)
+
+
+### Bug Fixes
+
+* **actions/posthog:** refer to repository properly ([#102](https://github.com/entur/gha-meta/issues/102)) ([f4515c6](https://github.com/entur/gha-meta/commit/f4515c622618757f688b6de78327314d2536a01d))
+
 ## [1.8.0](https://github.com/entur/gha-meta/compare/v1.7.0...v1.8.0) (2026-04-30)
 
 
