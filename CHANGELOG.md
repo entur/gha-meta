@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/entur/gha-meta/compare/v1.7.0...v1.8.0) (2026-04-30)
+
+
+### Features
+
+* **actions/posthog:** a reusable action for sending usage metrics to PostHog ([#99](https://github.com/entur/gha-meta/issues/99)) ([e27fa45](https://github.com/entur/gha-meta/commit/e27fa4579248d4792b933ef0d0f240346676a25d))
+
 ## [1.7.0](https://github.com/entur/gha-meta/compare/v1.6.3...v1.7.0) (2026-04-17)
 
 
