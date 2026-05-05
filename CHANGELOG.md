@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.3](https://github.com/entur/gha-meta/compare/v1.8.2...v1.8.3) (2026-05-05)
+
+
+### Bug Fixes
+
+* **actions/posthog:** add missing github token, log lacking version ([#106](https://github.com/entur/gha-meta/issues/106)) ([d7f63a8](https://github.com/entur/gha-meta/commit/d7f63a8ce1eddec6b93da609ff45f95d7c88dd3e))
+
 ## [1.8.2](https://github.com/entur/gha-meta/compare/v1.8.1...v1.8.2) (2026-05-05)
 
 
