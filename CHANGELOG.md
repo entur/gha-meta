@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/entur/gha-meta/compare/v1.8.1...v1.8.2) (2026-05-05)
+
+
+### Bug Fixes
+
+* Don't collect GHA duration data to send to PostHog. ([#104](https://github.com/entur/gha-meta/issues/104)) ([96c5efb](https://github.com/entur/gha-meta/commit/96c5efbf57989653c50ca3b7a00d98d4aa20cae9))
+
 ## [1.8.1](https://github.com/entur/gha-meta/compare/v1.8.0...v1.8.1) (2026-04-30)
 
 
