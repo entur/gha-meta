@@ -90,10 +90,7 @@ runs:
       uses: PostHog/posthog-github-action@58dea254b598fb5d469c0699c98af8288a7f7650  # v1.2.0
       continue-on-error: true
       with:
-        capture-job-durations: 'true'
-        capture-run-duration: 'true'
         event: ${{ inputs.workflow_name }}
-        github-token: ${{ github.token }}
         posthog-api-host: https://eu.i.posthog.com
         posthog-token: ${{ inputs.api_key }}
         properties: ${{ steps.build_properties.outputs.properties }}
