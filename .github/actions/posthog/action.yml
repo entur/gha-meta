@@ -22,6 +22,7 @@ runs:
     - name: Resolve action version
       id: workflow_version
       env:
+        GITHUB_TOKEN:   ${{ github.token }}
         GHA_REPOSITORY: ${{ inputs.gha_repository }}
       shell: bash
       run: |
@@ -32,7 +33,10 @@ runs:
         RUN_DATA=$(curl -sf \
           -H "Authorization: Bearer $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github+json" \
-          "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" || echo "{}")
+          "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}") || {
+          echo "::warning::Failed to fetch run data from GitHub API; workflow_version will be empty"
+          RUN_DATA="{}"
+        }
 
         GHA_SHA=$(echo "$RUN_DATA" | jq -r --arg repo "${GHA_REPOSITORY}" \
         '(.referenced_workflows // [])[] | select(.path | startswith($repo)) | .sha' | head -1)
