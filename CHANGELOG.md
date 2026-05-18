@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.4](https://github.com/entur/gha-meta/compare/v1.8.3...v1.8.4) (2026-05-18)
+
+
+### Bug Fixes
+
+* Wrong input name for target_branch, was branch ([#108](https://github.com/entur/gha-meta/issues/108)) ([d99fdd6](https://github.com/entur/gha-meta/commit/d99fdd6899cd14ccf9ab38aa6d1eafdb74cc059d))
+
 ## [1.8.3](https://github.com/entur/gha-meta/compare/v1.8.2...v1.8.3) (2026-05-05)
 
 
