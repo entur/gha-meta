@@ -35,6 +35,8 @@ on:
       # standardized output
       releases_created:
         value: ${{ jobs.release-please.outputs.releases_created }}
+      prs_created:
+        value: ${{ jobs.release-please.outputs.prs_created }}
       tag_name:
         value: ${{ jobs.release-please.outputs.tag_name }}
       version:
@@ -52,6 +54,7 @@ jobs:
     timeout-minutes: 30
     outputs:
       releases_created: ${{ steps.release-output.outputs.releases_created }}
+      prs_created: ${{ steps.release-output.outputs.prs_created }}
       tag_name: ${{ steps.release-output.outputs.tag_name }}
       version: ${{ steps.release-output.outputs.version }}
       body: ${{ steps.release-output.outputs.body }}
@@ -113,6 +116,10 @@ jobs:
           # Extract global release status
           releases_created=$(echo "$outputs_json" | jq -r .releases_created)
           echo "releases_created=${releases_created:-false}" >> "$GITHUB_OUTPUT"
+          
+          # Extract global pr status
+          prs_created=$(echo "$outputs_json" | jq -r .prs_created)
+          echo "prs_created=${prs_created:-false}" >> "$GITHUB_OUTPUT"
 
           # Determine the path prefix for output keys
           # Default to the input path (normalized to '.' in pre-release step)
