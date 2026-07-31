@@ -31,11 +31,14 @@ on:
     outputs:
       # for backward compatibility
       release_created:
+        description: "Alias for 'releases_created'."
         value: ${{ jobs.release-please.outputs.releases_created }}
       # standardized output
       releases_created:
+        description: "Boolean. true if release-please created a new release, false if not."
         value: ${{ jobs.release-please.outputs.releases_created }}
       prs_created:
+        description: "Boolean. true if release-please created a PR for a new release, false if not."
         value: ${{ jobs.release-please.outputs.prs_created }}
       tag_name:
         value: ${{ jobs.release-please.outputs.tag_name }}
