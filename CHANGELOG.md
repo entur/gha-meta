@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/entur/gha-meta/compare/v1.8.4...v1.9.0) (2026-08-04)
+
+
+### Features
+
+* Forward "prs_created" output from release-please ([#117](https://github.com/entur/gha-meta/issues/117)) ([92a3aec](https://github.com/entur/gha-meta/commit/92a3aec006f7cf0850d22cedb98e08fb1293da3b))
+
 ## [1.8.4](https://github.com/entur/gha-meta/compare/v1.8.3...v1.8.4) (2026-05-18)
 
 
