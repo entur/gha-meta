@@ -16,6 +16,7 @@
 <!-- Describe what breaks and how to migrate -->
 <!-- ⚠️ A breaking change needs a new major version:
      - the PR title must be `type!: ...`, or the description must contain a `BREAKING CHANGE: ...` footer
+     - without it, release-please only cuts a patch/minor and consumers get the change silently on the current major version -->
 <!-- Remove the section if not relevant --> 
 
 ## ✅ Checklist
