@@ -72,7 +72,7 @@ runs:
         token_format: ${{ inputs.token_format }}
     - id: login-gcr
       name: Authenticate with Google Container Registry
-      uses: docker/login-action@v4.2.0
+      uses: docker/login-action@v4.6.0
       if: inputs.cloud_provider == 'gcp'
       with:
         registry: eu.gcr.io
@@ -80,7 +80,7 @@ runs:
         password: ${{ steps.login-gcp.outputs.access_token }}
     - id: login-gcr-europe-west1
       name: Authenticate with Google Container Registry
-      uses: docker/login-action@v4.2.0
+      uses: docker/login-action@v4.6.0
       if: inputs.cloud_provider == 'gcp'
       with:
         registry: europe-west1-docker.pkg.dev
