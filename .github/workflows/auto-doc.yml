@@ -27,28 +27,49 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check that the target branch still exists
+        id: ref-check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REF: ${{ inputs.target_branch || github.event.pull_request.head.ref }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          if [[ -z "$REF" ]]; then
+            # No explicit ref: checkout falls back to github.ref, which always resolves.
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if gh api "repos/${REPOSITORY}/branches/${REF}" --silent 2>/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Branch '${REF}' no longer exists in ${REPOSITORY} - skipping the documentation update. This is expected when re-running a workflow whose branch has since been merged and deleted."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.ref-check.outputs.exists == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.target_branch || github.event.pull_request.head.ref }}
-      - uses: tj-actions/auto-doc@b10ceedffd794ec29a8fa8700529f40c1b64a951 # v3.6.0
+      - if: steps.ref-check.outputs.exists == 'true'
+        uses: tj-actions/auto-doc@b10ceedffd794ec29a8fa8700529f40c1b64a951 # v3.6.0
         with:
           filename: ${{ inputs.workflow_file }}
           reusable: true
           output: ${{ inputs.readme_file }}
           use_code_blocks: true
-      - uses: tj-actions/verify-changed-files@a1c6acee9df209257a246f2cc6ae8cb6581c1edf # v20.0.4
+      - if: steps.ref-check.outputs.exists == 'true'
+        uses: tj-actions/verify-changed-files@a1c6acee9df209257a246f2cc6ae8cb6581c1edf # v20.0.4
         id: verify-changed-files
         with:
           files: |
             ${{ inputs.readme_file }}
       - name: Printout changed files
-        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        if: steps.ref-check.outputs.exists == 'true' && steps.verify-changed-files.outputs.files_changed == 'true'
         env:
           CHANGED_FILES: ${{ steps.verify-changed-files.outputs.changed_files }}
         run: |
           echo "Changed files: $CHANGED_FILES"
       - uses: EndBug/add-and-commit@cc9c08ba6c8df3b93a8f2db63e89b98368ae2ae8 # v11.1.1
-        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        if: steps.ref-check.outputs.exists == 'true' && steps.verify-changed-files.outputs.files_changed == 'true'
         with:
           default_author: ${{ inputs.commit_default_author }}
           message: "docs: Update workflow documentation"
