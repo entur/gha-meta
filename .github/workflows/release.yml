@@ -143,7 +143,7 @@ jobs:
           fi
 
           # Extract specific release details
-          for key in tag_name version body major minor patch; do
+          for key in tag_name version body major minor patch sha; do
             lookup_key="${prefix}${key}"
             value=$(echo "$outputs_json" | jq -r --arg k "$lookup_key" '.[$k]')
             if [[ "$value" == "null" ]]; then value=""; fi
@@ -161,15 +161,36 @@ jobs:
         env:
           RELEASE_MAJOR: ${{ steps.release-output.outputs.major }}
           RELEASE_MINOR: ${{ steps.release-output.outputs.minor }}
-          RELEASE_PATCH: ${{ steps.release-output.outputs.patch }}
+          RELEASE_SHA: ${{ steps.release-output.outputs.sha }}
         run: |
+          set -euo pipefail
+
+          if [[ -z "$RELEASE_SHA" ]]; then
+            echo "::error::release-please did not report a release commit sha; refusing to move floating tags"
+            exit 1
+          fi
+
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git tag -d "v$RELEASE_MAJOR" 2>/dev/null || true
-          git tag -d "v$RELEASE_MAJOR.$RELEASE_MINOR" 2>/dev/null || true
-          git push origin ":v$RELEASE_MAJOR" 2>/dev/null || true
-          git push origin ":v$RELEASE_MAJOR.$RELEASE_MINOR" 2>/dev/null || true
-          git tag -a "v$RELEASE_MAJOR" -m "chore(release): v$RELEASE_MAJOR"
-          git tag -a "v$RELEASE_MAJOR.$RELEASE_MINOR" -m "chore(release): v$RELEASE_MAJOR.$RELEASE_MINOR"
-          git push origin "v$RELEASE_MAJOR"
-          git push origin "v$RELEASE_MAJOR.$RELEASE_MINOR"
+
+          # The checkout at the start of this job can predate the release
+          # commit release-please just created (or target a different
+          # branch), so fetch it explicitly rather than relying on HEAD.
+          if ! git rev-parse -q --verify "${RELEASE_SHA}^{commit}" >/dev/null; then
+            git fetch --no-tags --depth=1 origin "$RELEASE_SHA"
+          fi
+
+          major_tag="v$RELEASE_MAJOR"
+          minor_tag="v$RELEASE_MAJOR.$RELEASE_MINOR"
+
+          # -f (re)points the local tag at the release commit in place,
+          # without deleting it first; this only ever touches local refs.
+          git tag -f -a "$major_tag" -m "chore(release): $major_tag" "$RELEASE_SHA"
+          git tag -f -a "$minor_tag" -m "chore(release): $minor_tag" "$RELEASE_SHA"
+
+          # One atomic push: both floating tags move together, force-updated
+          # only on these two explicit refspecs. The remote tags are never
+          # deleted beforehand, so a rejected push leaves them untouched.
+          git push --atomic origin \
+            "+refs/tags/$major_tag:refs/tags/$major_tag" \
+            "+refs/tags/$minor_tag:refs/tags/$minor_tag"
