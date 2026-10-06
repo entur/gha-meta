@@ -8,7 +8,42 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - run: .github/tests/test-tag-versions.sh
+      # Extracts the tag-versions step's run block (no duplicated logic) and
+      # checks it against a local bare repo: tags land on the release commit
+      # even when checkout HEAD differs, and a rejected push moves neither
+      # floating tag (atomic).
+      - run: |
+          set -euo pipefail
+          yq -r '.jobs.release-please.steps[] | select(.id == "tag-versions") | .run' .github/workflows/release.yml > /tmp/tag-versions.sh
+
+          d=$(mktemp -d); remote="$d/remote.git"
+          git init -q --bare "$remote"
+          git init -q "$d/seed"; cd "$d/seed"
+          git config user.email t@e.com; git config user.name t
+          echo a > f; git add f; git commit -qm first; c1=$(git rev-parse HEAD)
+          echo b >> f; git add f; git commit -qm second; c2=$(git rev-parse HEAD)
+          git remote add origin "$remote"; git push -q origin HEAD:main
+          git tag -a v2 -m x "$c1"; git tag -a v2.1 -m x "$c1"
+          git push -q origin refs/tags/v2 refs/tags/v2.1
+
+          git init -q "$d/checkout"; cd "$d/checkout"
+          git remote add origin "$remote"
+          git fetch -q --depth=1 origin "$c1"; git checkout -q FETCH_HEAD
+
+          RELEASE_MAJOR=2 RELEASE_MINOR=1 RELEASE_SHA="$c2" bash /tmp/tag-versions.sh
+          [ "$(git -C "$remote" rev-parse "refs/tags/v2^{commit}")" = "$c2" ] ||
+            { echo "v2 did not land on the release commit (not checkout HEAD)"; exit 1; }
+
+          # shellcheck disable=SC2016 # literal hook script, expanded by sh at push time, not here
+          printf '#!/bin/sh\nwhile read -r o n r; do [ "$r" = refs/tags/v2.1 ] && exit 1; done\n' > "$remote/hooks/pre-receive"
+          chmod +x "$remote/hooks/pre-receive"
+          if RELEASE_MAJOR=2 RELEASE_MINOR=1 RELEASE_SHA="$c1" bash /tmp/tag-versions.sh; then
+            echo "expected the remote to reject this push"; exit 1
+          fi
+          [ "$(git -C "$remote" rev-parse "refs/tags/v2^{commit}")" = "$c2" ] ||
+            { echo "v2 moved even though the atomic push was rejected"; exit 1; }
+
+          echo "tag-versions checks passed"
 
   test-local-actions-gcp:
     runs-on: ubuntu-24.04
