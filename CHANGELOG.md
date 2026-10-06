@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/entur/gha-meta/compare/v1.9.0...v1.9.1) (2026-10-06)
+
+
+### Bug Fixes
+
+* push floating release tags atomically against the release commit ([#127](https://github.com/entur/gha-meta/issues/127)) ([7cec00f](https://github.com/entur/gha-meta/commit/7cec00f028f8f1d0f9b273db399528dccb69beb6))
+
 ## [1.9.0](https://github.com/entur/gha-meta/compare/v1.8.4...v1.9.0) (2026-08-04)
 
 
