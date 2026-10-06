@@ -33,15 +33,20 @@ jobs:
           RELEASE_MAJOR=2 RELEASE_MINOR=1 RELEASE_SHA="$c2" bash /tmp/tag-versions.sh
           [ "$(git -C "$remote" rev-parse "refs/tags/v2^{commit}")" = "$c2" ] ||
             { echo "v2 did not land on the release commit (not checkout HEAD)"; exit 1; }
+          [ "$(git -C "$remote" rev-parse "refs/tags/v2.1^{commit}")" = "$c2" ] ||
+            { echo "v2.1 did not land on the release commit (not checkout HEAD)"; exit 1; }
 
+          # Reject only the minor tag; without --atomic, the major tag would move.
           # shellcheck disable=SC2016 # literal hook script, expanded by sh at push time, not here
-          printf '#!/bin/sh\nwhile read -r o n r; do [ "$r" = refs/tags/v2.1 ] && exit 1; done\n' > "$remote/hooks/pre-receive"
-          chmod +x "$remote/hooks/pre-receive"
+          printf '#!/bin/sh\n[ "$1" != refs/tags/v2.1 ]\n' > "$remote/hooks/update"
+          chmod +x "$remote/hooks/update"
           if RELEASE_MAJOR=2 RELEASE_MINOR=1 RELEASE_SHA="$c1" bash /tmp/tag-versions.sh; then
             echo "expected the remote to reject this push"; exit 1
           fi
           [ "$(git -C "$remote" rev-parse "refs/tags/v2^{commit}")" = "$c2" ] ||
             { echo "v2 moved even though the atomic push was rejected"; exit 1; }
+          [ "$(git -C "$remote" rev-parse "refs/tags/v2.1^{commit}")" = "$c2" ] ||
+            { echo "v2.1 moved even though the atomic push was rejected"; exit 1; }
 
           echo "tag-versions checks passed"
 
