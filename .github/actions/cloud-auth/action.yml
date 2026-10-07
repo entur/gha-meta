@@ -55,9 +55,20 @@ runs:
           echo "ERROR: The combination of Repository and Branch name is too long (above 120 chars), reduce the length of the branch name."
           exit 1
         fi
+    # auth has no retry of its own and its STS exchange occasionally fails with
+    # ECONNRESET. Remove once a release after v3.0.0 includes
+    # google-github-actions/auth#532.
     - id: login-gcp
       name: Authenticate with Google Cloud
       if: inputs.cloud_provider == 'gcp'
+      continue-on-error: true
+      uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+      with:
+        workload_identity_provider: ${{ inputs.gcp_workload_identity_provider }}
+        service_account: ${{ inputs.gcp_service_account }}
+    - id: login-gcp-retry
+      name: Authenticate with Google Cloud (retry)
+      if: inputs.cloud_provider == 'gcp' && steps.login-gcp.outcome == 'failure'
       uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
       with:
         workload_identity_provider: ${{ inputs.gcp_workload_identity_provider }}
