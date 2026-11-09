@@ -8,6 +8,12 @@ Uses https://github.com/PostHog/posthog-github-action under the hood, and enhanc
 Add the following as the last step in a reusable workflow job.
 If your reusable workflow consists of multiple jobs, you should only invoke the action in one of the jobs.
 
+### Inputs
+
+- `api_key`: The public token for your Posthog project (starts with phc_)
+- `workflow_inputs`: The workflow inputs cannot be found automatically, so you need to specify them by setting this to `${{ toJSON(inputs) }}`
+- `extra_properties`: Attach custom data to events. Must be a JSON object, serialized to a string.
+
 ```yaml
 
 jobs:
@@ -19,6 +25,7 @@ jobs:
         with:
           api_key:         x # The public token for your Posthog project (starts with phc_)
           workflow_inputs: ${{ toJSON(inputs) }}
+          extra_properties: "{\"foo\": \"bar\"}"
 ```
 
 ## Event structure
@@ -32,6 +39,7 @@ All events are sent with the event name `workflow_executed`. The base properties
 - `calling_workflow_name`: The name of the reusable workflow. If `job.workflow_file_path` is `.github/workflows/foo.yml`, it will have the value `foo`.
 - `calling_workflow_version`: The declared version of the reusable workflow: If `job.workflow_ref` is `foo-org/bar-repo/.github/workflow/baz.yml@refs/tags/v1` it will have the value `refs/tags/v1`.
 - `calling_workflow_input_*`: The values of all the reusable workflow inputs as provided by the `workflow_inputs` argument to this action.
+- `extra_*`: Custom data from the input `extra_properties`
 
 Properties are prefixed with `calling_` to distinguish them from properties relating to the "base" workflow,
 meaning the workflow that calls your reusable workflow.
@@ -49,7 +57,7 @@ meaning the workflow that calls your reusable workflow.
   "actor": "***",
   "actor_type": "human",
   "ref": "refs/pull/335/merge",
-  "repositoryOwner": "entur"
+  "repositoryOwner": "entur",
   "repository": "api-spec-registry",
   "calling_workflow_name": "validate",
   "calling_workflow_file_path": ".github/workflows/validate.yml",
@@ -63,6 +71,7 @@ meaning the workflow that calls your reusable workflow.
   "calling_workflow_input_fail_on_breaking_changes": true,
   "calling_workflow_input_artifact": "",
   "calling_workflow_input_env": "prd",
+  "extra_foo": "bar"
 }
 ```
 
