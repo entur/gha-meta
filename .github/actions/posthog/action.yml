@@ -9,6 +9,10 @@ inputs:
     description: "Workflow inputs as a JSON string (e.g. toJSON(inputs))"
     required: false
     default: "{}"
+  extra_properties:
+    description: "Enrich the events with extra custom properties, formatted as json."
+    required: false
+    default: "{}"
 
 runs:
   using: composite
@@ -35,6 +39,16 @@ runs:
                 version: version
             }
 
+    - name: Validate extra properties
+      id: validate_extra_properties
+      env:
+        GHA_EXTRA_PROPERTIES: ${{ inputs.extra_properties }}
+      uses: actions/github-script@v9
+      with:
+        # language=javascript
+        script: |
+            const properties = JSON.parse(process.env.GHA_EXTRA_PROPERTIES);
+            return properties;
     - name: Build properties
       id: build_properties
       shell: bash
@@ -46,6 +60,7 @@ runs:
         GHA_CALLING_WORKFLOW_FILE_PATH: ${{ job.workflow_file_path }}
         GHA_CALLING_WORKFLOW_NAME:     ${{ fromJSON(steps.calling_workflow_metadata.outputs.result).name }}
         GHA_CALLING_WORKFLOW_VERSION:  ${{ fromJSON(steps.calling_workflow_metadata.outputs.result).version }}
+        GHA_EXTRA_PROPERTIES: ${{ steps.validate_extra_properties.outputs.result }}
       run: |
         set -o pipefail
 
@@ -54,18 +69,19 @@ runs:
             with_entries(
               select(
                 (.key | test("token|secret|key|password|credential|auth"; "i")) | not
-              )                                                                                                              
+              )
             )
-          ')                                                                                                                 
-                                                                                                                           
+          ')
+
           properties=$(jq -n \
-            --argjson calling_workflow_inputs     "$GHA_CALLING_WORKFLOW_SAFE_INPUTS" \
             --arg     calling_workflow_sha        "$GHA_CALLING_WORKFLOW_SHA" \
             --arg     calling_workflow_repository "$GHA_CALLING_WORKFLOW_REPOSITORY" \
             --arg     calling_workflow_ref        "$GHA_CALLING_WORKFLOW_REF" \
             --arg     calling_workflow_file_path  "$GHA_CALLING_WORKFLOW_FILE_PATH" \
             --arg     calling_workflow_name       "$GHA_CALLING_WORKFLOW_NAME" \
             --arg     calling_workflow_version    "$GHA_CALLING_WORKFLOW_VERSION" \
+            --argjson calling_workflow_inputs     "$GHA_CALLING_WORKFLOW_SAFE_INPUTS" \
+            --argjson extra_properties            "$GHA_EXTRA_PROPERTIES" \
             '{
                 calling_workflow_sha:        $calling_workflow_sha,
                 calling_workflow_repository: $calling_workflow_repository,
@@ -74,8 +90,10 @@ runs:
                 calling_workflow_name:       $calling_workflow_name,
                 calling_workflow_version:    $calling_workflow_version
               }
-                + ($calling_workflow_inputs | with_entries(.key = ("calling_workflow_input_" + .key)))'
-          )                                                                                                                  
+                + ($calling_workflow_inputs | with_entries(.key = ("calling_workflow_input_" + .key)))
+                + ($extra_properties | with_entries(.key = ("extra_" + .key)))
+            '
+          )
           echo "properties=$(echo "$properties" | jq -c .)" >> "$GITHUB_OUTPUT"
     - name: Send event to PostHog
       uses: PostHog/posthog-github-action@58dea254b598fb5d469c0699c98af8288a7f7650  # v1.2.0
