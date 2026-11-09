@@ -16,7 +16,6 @@ runs:
     - name: Resolve calling workflow metadata
       id: calling_workflow_metadata
       env:
-        GITHUB_TOKEN:   ${{ github.token }}
         GHA_CALLING_WORKFLOW_REF: ${{ job.workflow_ref }}
         GHA_CALLING_WORKFLOW_FILE_PATH: ${{ job.workflow_file_path }}
       uses: actions/github-script@v9
@@ -40,7 +39,6 @@ runs:
       id: build_properties
       shell: bash
       env:
-        GITHUB_TOKEN:      ${{ github.token }}
         GHA_CALLING_WORKFLOW_INPUTS:   ${{ inputs.workflow_inputs }}
         GHA_CALLING_WORKFLOW_SHA: ${{ job.workflow_sha }}
         GHA_CALLING_WORKFLOW_REPOSITORY: ${{ job.workflow_repository }}
