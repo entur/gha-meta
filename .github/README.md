@@ -16,4 +16,4 @@ Reusable actions
 - `cloud-auth` for GCP and Azure
 - `k8s-auth` for GKE and AKS
 - `docker-auth` for GCR or ACR
-- `posthog` for sending analytics on reusable actions to PostHog
+- [`posthog`](actions/posthog/README.md) for sending analytics on reusable workflows to PostHog

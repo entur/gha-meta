@@ -5,67 +5,52 @@ inputs:
   api_key:
     description: "PostHog project API key"
     required: true
-  gha_repository:
-    description: "GitHub repository where the reusable workflow lives, in the format 'owner/repo' (e.g. 'entur/gha-helm')"
-    required: true
   workflow_inputs:
     description: "Workflow inputs as a JSON string (e.g. toJSON(inputs))"
     required: false
     default: "{}"
-  workflow_name:
-    description: "Name of the workflow. Used as the event name in PostHog (lint, deploy, etc.)"
-    required: true
 
 runs:
   using: composite
   steps:
-    - name: Resolve action version
-      id: workflow_version
+    - name: Resolve calling workflow metadata
+      id: calling_workflow_metadata
       env:
-        GITHUB_TOKEN:   ${{ github.token }}
-        GHA_REPOSITORY: ${{ inputs.gha_repository }}
-      shell: bash
-      run: |
-        set -o pipefail
+        GHA_CALLING_WORKFLOW_REF: ${{ job.workflow_ref }}
+        GHA_CALLING_WORKFLOW_FILE_PATH: ${{ job.workflow_file_path }}
+      uses: actions/github-script@v9
+      with:
+        # language=javascript
+        script: | 
+            const workflowRef = process.env.GHA_CALLING_WORKFLOW_REF;
+            const workflowFilepath = process.env.GHA_CALLING_WORKFLOW_FILE_PATH;
+            
+            const version = workflowRef.split("@")[1]
+            
+            const nameRegex = /^\.github\/workflows\/([^/]+)\.ya?ml$/;
+            const name = workflowFilepath.match(nameRegex)?.[1];
+            
+            return {
+                name: name,
+                version: version
+            }
 
-        # Resolve version by finding this reusable workflow's entry in the caller's run.
-        # (GITHUB_WORKFLOW_REF is the caller's ref, not the reusable workflow's ref)
-        RUN_DATA=$(curl -sf \
-          -H "Authorization: Bearer $GITHUB_TOKEN" \
-          -H "Accept: application/vnd.github+json" \
-          "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}") || {
-          echo "::warning::Failed to fetch run data from GitHub API; workflow_version will be empty"
-          RUN_DATA="{}"
-        }
-
-        GHA_SHA=$(echo "$RUN_DATA" | jq -r --arg repo "${GHA_REPOSITORY}" \
-        '(.referenced_workflows // [])[] | select(.path | startswith($repo)) | .sha' | head -1)
-        GHA_REF=$(echo "$RUN_DATA" | jq -r --arg repo "${GHA_REPOSITORY}" \
-        '(.referenced_workflows // [])[] | select(.path | startswith($repo)) | .ref // ""' | head -1)
-
-        WORKFLOW_VERSION=""
-        if [ -n "$GHA_REF" ]; then
-          WORKFLOW_VERSION="${GHA_REF}"
-        elif [ -n "$GHA_SHA" ]; then
-          WORKFLOW_VERSION="${GHA_SHA:0:7}"
-        fi
-
-        echo "Workflow version: $WORKFLOW_VERSION"
-        echo "workflow_version=${WORKFLOW_VERSION}" >> "$GITHUB_OUTPUT"
     - name: Build properties
       id: build_properties
       shell: bash
       env:
-        GITHUB_TOKEN:      ${{ github.token }}
-        GHA_REPOSITORY:    ${{ inputs.gha_repository }}
-        WORKFLOW_INPUTS:   ${{ inputs.workflow_inputs }}
-        WORKFLOW_NAME:     ${{ inputs.workflow_name }}
-        WORKFLOW_VERSION:  ${{ steps.workflow_version.outputs.workflow_version }}
+        GHA_CALLING_WORKFLOW_INPUTS:   ${{ inputs.workflow_inputs }}
+        GHA_CALLING_WORKFLOW_SHA: ${{ job.workflow_sha }}
+        GHA_CALLING_WORKFLOW_REPOSITORY: ${{ job.workflow_repository }}
+        GHA_CALLING_WORKFLOW_REF: ${{ job.workflow_ref }}
+        GHA_CALLING_WORKFLOW_FILE_PATH: ${{ job.workflow_file_path }}
+        GHA_CALLING_WORKFLOW_NAME:     ${{ fromJSON(steps.calling_workflow_metadata.outputs.result).name }}
+        GHA_CALLING_WORKFLOW_VERSION:  ${{ fromJSON(steps.calling_workflow_metadata.outputs.result).version }}
       run: |
         set -o pipefail
 
           # Strip inputs whose key names suggest sensitive content
-          SAFE_INPUTS=$(echo "$WORKFLOW_INPUTS" | jq -c '
+          GHA_CALLING_WORKFLOW_SAFE_INPUTS=$(echo "$GHA_CALLING_WORKFLOW_INPUTS" | jq -c '
             with_entries(
               select(
                 (.key | test("token|secret|key|password|credential|auth"; "i")) | not
@@ -74,27 +59,29 @@ runs:
           ')                                                                                                                 
                                                                                                                            
           properties=$(jq -n \
-            --arg     event    "$GITHUB_EVENT_NAME" \
-            --argjson inputs   "$SAFE_INPUTS" \
-            --arg     name     "$WORKFLOW_NAME" \
-            --arg     repo     "$GHA_REPOSITORY" \
-            --arg     run_id   "$GITHUB_RUN_ID" \
-            --arg     version  "$WORKFLOW_VERSION" \
+            --argjson calling_workflow_inputs     "$GHA_CALLING_WORKFLOW_SAFE_INPUTS" \
+            --arg     calling_workflow_sha        "$GHA_CALLING_WORKFLOW_SHA" \
+            --arg     calling_workflow_repository "$GHA_CALLING_WORKFLOW_REPOSITORY" \
+            --arg     calling_workflow_ref        "$GHA_CALLING_WORKFLOW_REF" \
+            --arg     calling_workflow_file_path  "$GHA_CALLING_WORKFLOW_FILE_PATH" \
+            --arg     calling_workflow_name       "$GHA_CALLING_WORKFLOW_NAME" \
+            --arg     calling_workflow_version    "$GHA_CALLING_WORKFLOW_VERSION" \
             '{
-                event_name:       $event,
-                gha_repository:   $repo,
-                run_id:           $run_id,
-                workflow_name:    $name,
-                workflow_version: $version
+                calling_workflow_sha:        $calling_workflow_sha,
+                calling_workflow_repository: $calling_workflow_repository,
+                calling_workflow_ref:        $calling_workflow_ref,
+                calling_workflow_file_path:  $calling_workflow_file_path,
+                calling_workflow_name:       $calling_workflow_name,
+                calling_workflow_version:    $calling_workflow_version
               }
-                + ($inputs | with_entries(.key = ("input_" + .key)))'
+                + ($calling_workflow_inputs | with_entries(.key = ("calling_workflow_input_" + .key)))'
           )                                                                                                                  
           echo "properties=$(echo "$properties" | jq -c .)" >> "$GITHUB_OUTPUT"
     - name: Send event to PostHog
       uses: PostHog/posthog-github-action@58dea254b598fb5d469c0699c98af8288a7f7650  # v1.2.0
       continue-on-error: true
       with:
-        event: ${{ inputs.workflow_name }}
+        event: "gha_workflow_executed"
         posthog-api-host: https://eu.i.posthog.com
         posthog-token: ${{ inputs.api_key }}
         properties: ${{ steps.build_properties.outputs.properties }}
