@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.10.0](https://github.com/entur/gha-meta/compare/v1.9.1...v1.10.0) (2026-11-16)
+
+
+### Features
+
+* **ETU-79970:** Allow sending extra custom properties ([3a56729](https://github.com/entur/gha-meta/commit/3a56729c650bc67ac25c9c795002e69b4546eea6))
+* **ETU-79970:** Send extra data to posthog ([#133](https://github.com/entur/gha-meta/issues/133)) ([3a56729](https://github.com/entur/gha-meta/commit/3a56729c650bc67ac25c9c795002e69b4546eea6))
+* **ETU-80372:** Use job context to get reusable workflow metadata ([#132](https://github.com/entur/gha-meta/issues/132)) ([dea85e6](https://github.com/entur/gha-meta/commit/dea85e64f62f766d825a19b2c11e22d67d782362))
+
 ## [1.9.1](https://github.com/entur/gha-meta/compare/v1.9.0...v1.9.1) (2026-10-06)
 
 
